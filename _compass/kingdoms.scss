@@ -1,0 +1,145 @@
+@import "compass";
+
+$tile_count_per_size: 5;
+$tile_size: 46px;
+$tile_margin: 2px;
+$gameboard_size: ($tile_size + 2 * $tile_margin) * $tile_count_per_size;
+
+$background_color: #FFFBF7;
+$light_text_color: #FFFBF7;
+$text-color: #736F6D;
+$tile_color: #EBE7E4;
+$player1_color: #4DBF86;
+$player2_color: #FF9159;
+
+body {
+    background-color: $background_color;
+    font-family: 'Quicksand', sans-serif;
+    color: $text-color;
+}
+
+.page {
+    width: $gameboard_size;
+    margin: 0 auto;
+}
+
+#gameboard {
+    width: $gameboard_size;
+    height: $gameboard_size;
+    position: relative;
+    margin: 0 auto;
+    top: 154px;
+}
+
+.tile {
+    background-color: $tile_color;
+    position: absolute;
+    padding: 0;
+    margin: $tile_margin;
+    width: $tile_size;
+    height: $tile_size;
+    @include border-radius(4px);
+}
+
+.tile_image {
+    width: 100%;
+    height: 100%;
+}
+
+// State
+.king_state {
+    .tile_image {
+        background-image: url("../assets/crown.svg");
+        background-size: 100%;
+    }
+}
+
+.player1_state {
+    background-color: $player1_color;
+}
+
+.player2_state {
+    background-color: $player2_color;
+}
+
+// Substate
+.substate_up, .substate_right, .substate_down, .substate_left {
+    background-image: url("../assets/rampart.svg");
+    background-size: 100%;
+}
+
+.substate_up {
+    @include transform(rotate(180deg));
+}
+
+.substate_right {
+    @include transform(rotate(-90deg));
+}
+
+.substate_left {
+    @include transform(rotate(90deg));
+}
+
+// Player
+.player_card {
+    text-align: center;
+    position: relative;
+    width: $gameboard_size / 2;
+}
+
+#player1_card {
+    float: left;
+
+    .player_image {
+        background-color: $player1_color;
+    }
+
+    .micro_tile_highlighted {
+        background-color: $player1_color;
+        border-color: $player1_color;
+    }
+}
+
+#player2_card {
+    float: right;
+
+    .player_image {
+        background-color: $player2_color;
+    }
+
+    .micro_tile_highlighted {
+        background-color: $player2_color;
+        border-color: $player2_color;
+    }
+}
+
+.player_image {
+    width: 64px;
+    height: 64px;
+    @include border-radius(32px);
+    margin: 20px auto 8px;
+    line-height: 64px;
+    font-size: 20px;
+    color: $light_text_color;
+}
+
+.player_plays_count {
+    margin: 0 auto;
+}
+
+.player_title {
+    margin: 8px;
+}
+
+.micro_tile {
+    width: 8px;
+    height: 8px;
+    margin: 2px;
+    display: inline-block;
+    @include border-radius(2px);
+    border: solid 1px $tile_color;
+}
+
+.micro_tile_plain {
+    background-color: $tile_color;
+}

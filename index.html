@@ -1,0 +1,24 @@
+---
+layout: page
+---
+
+<div id="gameboard_container">
+  {% for i in (1..2) %}
+    <div id="player{{ i }}_card" class="player_card">
+      <div id="player{{ i }}_image" class="player_image"></div>
+      <div id="player{{ i }}_title"class="player_title"></div>
+      <div id="player{{ i }}_plays_count"class="player_plays_count"></div>
+    </div>
+  {% endfor %}
+
+  <div id="gameboard" onclick="load_next_gameboard_state()"></div>
+</div>
+
+<div id="error_container" style="display: none">
+  <h3>
+    Error
+  </h3>
+  <p>
+    The game you are looking for is not available.
+  </p>
+</div>
