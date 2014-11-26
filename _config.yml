@@ -12,5 +12,3 @@ github_username: spacebears
 
 # Build settings
 markdown: kramdown
-gems:
-- jekyll-compass
