@@ -107,7 +107,7 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
 
             # Svg
             if unfortifiable
-                get '../assets/unfortifiable.svg', (req) ->
+                get 'assets/unfortifiable.svg', (req) ->
                     svg = req.response
                     tile.innerHTML = svg
 
