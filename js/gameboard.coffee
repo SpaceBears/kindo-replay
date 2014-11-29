@@ -24,11 +24,8 @@
         return
 
     gameboard_state = @game.gameboard_states[@current_index]
-    next_gameboard_state = null
-    if @game.gameboard_states.length > @current_index + 1
-        next_gameboard_state = @game.gameboard_states[@current_index + 1]
     count = @game.gameboard.tile_count_by_side
-    load_gameboard_state gameboard_state, next_gameboard_state, count, (tile, state, substate) ->
+    load_gameboard_state gameboard_state, count, (tile, state, substate) ->
         if state or substate
             console.log tile
 
@@ -121,29 +118,14 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
             # Add to gameboard
             gameboard.appendChild tile
 
-load_gameboard_state = (gameboard_state, next_gameboard_state, count, changes) ->
+load_gameboard_state = (gameboard_state, count, changes) ->
     # Players
-    next = next_gameboard_state != null
+    for player in ["player1", "player2"]
+        current_turn_count = gameboard_state[player].current_turn_count
+        next_turn_count = gameboard_state[player].next_turn_count
 
-    plays_count1 = gameboard_state.player1.play_count
-    if plays_count1 == 0 and next
-        plays_count1 = next_gameboard_state.player1.play_count
-
-    plays_count2 = gameboard_state.player2.play_count
-    if plays_count2 == 0 and next
-        plays_count2 = next_gameboard_state.player2.play_count
-
-    unless next
-        plays_count1 = 0
-        plays_count2 = 0
-
-    plays_count_element1 = document.getElementById "player1_plays_count"
-    klass1 = if gameboard_state.player1.play_count == 0 then "micro_tile_plain" else "micro_tile_highlighted"
-    refresh_player_plays_count plays_count_element1, plays_count1, klass1
-
-    plays_count_element2 = document.getElementById "player2_plays_count"
-    klass2 = if gameboard_state.player2.play_count == 0 then "micro_tile_plain" else "micro_tile_highlighted"
-    refresh_player_plays_count plays_count_element2, plays_count2, klass2
+        plays_count_element = document.getElementById "#{player}_plays_count"
+        refresh_player_plays_count plays_count_element, current_turn_count, next_turn_count
 
     # Gameboard
     states = gameboard_state.states
@@ -181,11 +163,13 @@ refresh_icon_color = (tile, state) ->
     icon.setAttribute "width", "100%"
     icon.setAttribute "height", "100%"
 
-refresh_player_plays_count = (plays_count, count, klass) ->
-    for tile, i in plays_count.children
+refresh_player_plays_count = (plays_count_element, current_count, next_count) ->
+    for tile, i in plays_count_element.children
         tile.className = "micro_tile"
-        if i < count
-            tile.classList.add klass
+        if i < current_count
+            tile.classList.add "micro_tile_highlighted"
+        else if i < next_count
+            tile.classList.add "micro_tile_plain"
 
 refresh_tile_state = (tile, state) ->
     changed = false
