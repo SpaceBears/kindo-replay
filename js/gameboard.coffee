@@ -25,7 +25,8 @@
 
     gameboard_state = @game.gameboard_states[@current_index]
     count = @game.gameboard.tile_count_by_side
-    load_gameboard_state gameboard_state, count, (tile, state, substate) ->
+    last = @current_index + 1 == @game.gameboard_states.length
+    load_gameboard_state gameboard_state, count, last, (tile, state, substate) ->
         if state or substate
             console.log tile
 
@@ -102,23 +103,30 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
             tile.style.left = "#{i * tile_size}px"
             tile.style.top = "#{j * tile_size}px"
 
-            # Svg
+            # Divs
+            for name in ["unfortifiable_container", "tile_image", "just_played_container"]
+                img = document.createElement "div"
+                img.className = name
+                tile.appendChild img
+
+            # Svgs
             if unfortifiable
                 get 'assets/unfortifiable.svg', (req) ->
                     svg = req.response
-                    tile.innerHTML = svg
+                    tile.firstChild.innerHTML = svg
 
                     refresh_icon_color tile, 0
 
-            # Image
-            img = document.createElement "div"
-            img.className = "tile_image"
-            tile.appendChild img
+            get 'assets/just_played.svg', (req) ->
+                svg = req.response
+                tile.lastChild.innerHTML = svg
+
+                refresh_icon_color tile, 0
 
             # Add to gameboard
             gameboard.appendChild tile
 
-load_gameboard_state = (gameboard_state, count, changes) ->
+load_gameboard_state = (gameboard_state, count, last, changes) ->
     # Players
     for player in ["player1", "player2"]
         current_turn_count = gameboard_state[player].current_turn_count
@@ -130,6 +138,7 @@ load_gameboard_state = (gameboard_state, count, changes) ->
     # Gameboard
     states = gameboard_state.states
     substates = gameboard_state.substates
+    just_played_tiles = gameboard_state.just_played
 
     for j in [0..count-1]
         for i in [0..count-1]
@@ -137,9 +146,12 @@ load_gameboard_state = (gameboard_state, count, changes) ->
 
             state = get_object states, j, i, count
             state_changed = refresh_tile_state tile, state
+            just_played = if last then false else get_object(just_played_tiles, j, i, count) == 1
 
             if state_changed
                 refresh_icon_color tile, state
+
+            tile.lastChild.style.display = if just_played then "block" else "none"
 
             substate = get_object substates, j, i, count
             substate_changed = refresh_tile_substate tile, substate
@@ -147,21 +159,17 @@ load_gameboard_state = (gameboard_state, count, changes) ->
             changes(tile, state_changed, substate_changed)
 
 refresh_icon_color = (tile, state) ->
-    icon = tile.getElementsByTagName('svg')[0]
+    for icon in tile.getElementsByTagName('svg')
+        color = "#D9D5D2"
+        if state == 1 or state == 3
+            color = "#388C62"
+        if state == 2 or state == 4
+            color = "#CC7447"
 
-    unless icon
-        return
+        icon.setAttribute "fill", color
 
-    color = "#D9D5D2"
-    if state == 1 or state == 3
-        color = "#388C62"
-    if state == 2 or state == 4
-        color = "#CC7447"
-
-    icon.setAttribute "fill", color
-
-    icon.setAttribute "width", "100%"
-    icon.setAttribute "height", "100%"
+        icon.setAttribute "width", "100%"
+        icon.setAttribute "height", "100%"
 
 refresh_player_plays_count = (plays_count_element, current_count, next_count) ->
     for tile, i in plays_count_element.children
