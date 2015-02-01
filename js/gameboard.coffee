@@ -12,7 +12,7 @@
             document.getElementById("error_container").style.display = "block"
             document.getElementById("gameboard_container").style.display = "none"
         else
-            window.location = "http://kingdomsgame.fr"
+            window.location = "http://kindogame.fr"
 
 @load_next_gameboard_state = () ->
     if @current_index == null
@@ -55,7 +55,7 @@ fetch_game = (file_name, completion) ->
 
     console.log "fetching game…"
 
-    get "https://s3.eu-central-1.amazonaws.com/kingdomsgame/replays/#{file_name}.json", (req) ->
+    get "https://s3.eu-central-1.amazonaws.com/kindogame/replays/#{file_name}.json", (req) ->
         if req
             game = JSON.parse req.response
             console.log "game fetched"
