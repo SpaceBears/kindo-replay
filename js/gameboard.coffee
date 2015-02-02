@@ -70,6 +70,20 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
         image = document.getElementById "player#{i+1}_image"
         image.innerHTML = if i == 0 then "P1" else "P2"
 
+        # Image highlight
+        highlight = document.getElementById "player#{i+1}_image_highlight"
+        get 'assets/player_highlight.svg', (req) ->
+            svg = req.response
+            highlight.innerHTML = svg
+
+            color = null
+            if i == 0
+                color = "#4DBF86"
+            else
+                color = "#FF9159"
+
+            highlight.getElementsByTagName("svg")[0].setAttribute "stroke", color
+
         # Title
         title = document.getElementById "player#{i+1}_title"
         title.innerHTML = player.username
@@ -134,6 +148,9 @@ load_gameboard_state = (gameboard_state, count, last, changes) ->
 
         plays_count_element = document.getElementById "#{player}_plays_count"
         refresh_player_plays_count plays_count_element, current_turn_count, next_turn_count
+
+        card = document.getElementById "#{player}_card"
+        modify_class card, "highlight", current_turn_count > 0
 
     # Gameboard
     states = gameboard_state.states

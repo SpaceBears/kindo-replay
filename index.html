@@ -5,7 +5,10 @@ layout: page
 <div id="gameboard_container">
   {% for i in (1..2) %}
     <div id="player{{ i }}_card" class="player_card">
-      <div id="player{{ i }}_image" class="player_image"></div>
+      <div id="player{{ i }}_image_container" class="player_image_container">
+        <div id="player{{ i }}_image_highlight" class="player_image_highlight"></div>
+        <div id="player{{ i }}_image" class="player_image"></div>
+      </div>
       <div id="player{{ i }}_title"class="player_title"></div>
       <div id="player{{ i }}_plays_count"class="player_plays_count"></div>
     </div>

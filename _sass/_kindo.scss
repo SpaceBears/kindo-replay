@@ -4,6 +4,11 @@ $tile_count_per_size: 5;
 $tile_size: 46px;
 $tile_margin: 2px;
 $gameboard_size: ($tile_size + 2 * $tile_margin) * $tile_count_per_size;
+$player_card_size: $gameboard_size / 2;
+$player_image_size: 64px;
+$player_highlight_width: $player_image_size / 24;
+$player_image_highlight_size: $player_image_size + 4 * $player_highlight_width;
+$player_image_highlight_margin: -2 * $player_highlight_width;
 
 $background_color: #FFFBF7;
 $light_text_color: #FFFBF7;
@@ -87,7 +92,13 @@ body {
 .player_card {
     text-align: center;
     position: relative;
-    width: $gameboard_size / 2;
+    width: $player_card_size;
+}
+
+.highlight {
+    .player_image_highlight {
+        display: block;
+    }
 }
 
 #player1_card {
@@ -116,11 +127,26 @@ body {
     }
 }
 
-.player_image {
-    width: 64px;
-    height: 64px;
-    @include border-radius(32px);
+.player_image_container {
+    position: relative;
+    width: $player_image_size;
+    height: $player_image_size;
     margin: 20px auto 8px;
+}
+
+.player_image_highlight {
+    position: absolute;
+    width: $player_image_highlight_size;
+    height: $player_image_highlight_size;
+    margin: $player_image_highlight_margin;
+    display: none;
+}
+
+.player_image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    @include border-radius($player_image_size / 2);
     line-height: 64px;
     font-size: 20px;
     color: $light_text_color;
