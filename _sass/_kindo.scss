@@ -6,7 +6,7 @@ $tile_margin: 2px;
 $gameboard_size: ($tile_size + 2 * $tile_margin) * $tile_count_per_size;
 $player_card_size: $gameboard_size / 2;
 $player_image_size: 64px;
-$player_highlight_width: $player_image_size / 24;
+$player_highlight_width: $player_image_size * 3 / 88;
 $player_image_highlight_size: $player_image_size + 4 * $player_highlight_width;
 $player_image_highlight_margin: -2 * $player_highlight_width;
 
