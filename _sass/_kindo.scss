@@ -10,17 +10,10 @@ $player_highlight_width: $player_image_size * 3 / 88;
 $player_image_highlight_size: $player_image_size + 4 * $player_highlight_width;
 $player_image_highlight_margin: -2 * $player_highlight_width;
 
-$background_color: #FFFBF7;
-$light_text_color: #FFFBF7;
-$text-color: #736F6D;
-$tile_color: #EBE7E4;
-$player1_color: #4DBF86;
-$player2_color: #FF9159;
-
 body {
-    background-color: $background_color;
+    background-color: #FFF8F2;
     font-family: 'Quicksand', sans-serif;
-    color: $text-color;
+    color: #736F6D;
 }
 
 .page {
@@ -37,7 +30,6 @@ body {
 }
 
 .tile {
-    background-color: $tile_color;
     position: absolute;
     padding: 0;
     margin: $tile_margin;
@@ -60,14 +52,6 @@ body {
         background-image: url("../assets/crown.svg");
         background-size: 100%;
     }
-}
-
-.player1_state {
-    background-color: $player1_color;
-}
-
-.player2_state {
-    background-color: $player2_color;
 }
 
 // Substate
@@ -103,28 +87,10 @@ body {
 
 #player1_card {
     float: left;
-
-    .player_image {
-        background-color: $player1_color;
-    }
-
-    .micro_tile_highlighted {
-        background-color: $player1_color;
-        border-color: $player1_color;
-    }
 }
 
 #player2_card {
     float: right;
-
-    .player_image {
-        background-color: $player2_color;
-    }
-
-    .micro_tile_highlighted {
-        background-color: $player2_color;
-        border-color: $player2_color;
-    }
 }
 
 .player_image_container {
@@ -149,7 +115,6 @@ body {
     @include border-radius($player_image_size / 2);
     line-height: 64px;
     font-size: 20px;
-    color: $light_text_color;
 }
 
 .player_plays_count {
@@ -167,9 +132,6 @@ body {
     margin: 2px;
     display: inline-block;
     @include border-radius(2px);
-    border: solid 1px $tile_color;
+    border: solid 1px;
 }
 
-.micro_tile_plain {
-    background-color: $tile_color;
-}

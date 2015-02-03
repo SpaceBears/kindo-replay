@@ -5,6 +5,7 @@
     fetch_game param(), (game, error) ->
         if game
             @game = game
+            @theme_name = @game.theme
             setup_game @game.gameboard, @game.player1, @game.player2, @game.max_play_count_by_turn
             @current_index = null
             load_next_gameboard_state()
@@ -64,29 +65,28 @@ fetch_game = (file_name, completion) ->
             completion null, true
 
 setup_game = (gameboard, player1, player2, max_play_count) ->
+    document.body.style.backgroundColor = background_color()
+    document.body.style.color = text_color()
+
     # Players
     for player, i in [player1, player2]
         # Image
         image = document.getElementById "player#{i+1}_image"
         image.innerHTML = if i == 0 then "P1" else "P2"
+        image.style.color = background_color()
+        refresh_background_color image, i + 1
 
         # Image highlight
         highlight = document.getElementById "player#{i+1}_image_highlight"
         get 'assets/player_highlight.svg', (req) ->
             svg = req.response
             highlight.innerHTML = svg
-
-            color = null
-            if i == 0
-                color = "#4DBF86"
-            else
-                color = "#FF9159"
-
-            highlight.getElementsByTagName("svg")[0].setAttribute "stroke", color
+            highlight.getElementsByTagName("svg")[0].setAttribute "stroke", color_from_state(i+1)
 
         # Title
         title = document.getElementById "player#{i+1}_title"
         title.innerHTML = player.username
+        title.style.color = color_from_state(i+1)
 
         # plays count
         plays_count = document.getElementById "player#{i+1}_plays_count"
@@ -116,6 +116,7 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
                 tile.className += " unfortifiable"
             tile.style.left = "#{i * tile_size}px"
             tile.style.top = "#{j * tile_size}px"
+            refresh_background_color tile, 0
 
             # Divs
             for name in ["unfortifiable_container", "tile_image", "just_played_container"]
@@ -142,12 +143,12 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
 
 load_gameboard_state = (gameboard_state, count, last, changes) ->
     # Players
-    for player in ["player1", "player2"]
+    for player, i in ["player1", "player2"]
         current_turn_count = gameboard_state[player].current_turn_count
         next_turn_count = gameboard_state[player].next_turn_count
 
         plays_count_element = document.getElementById "#{player}_plays_count"
-        refresh_player_plays_count plays_count_element, current_turn_count, next_turn_count
+        refresh_player_plays_count plays_count_element, current_turn_count, next_turn_count, i+1
 
         card = document.getElementById "#{player}_card"
         modify_class card, "highlight", current_turn_count > 0
@@ -167,6 +168,7 @@ load_gameboard_state = (gameboard_state, count, last, changes) ->
 
             if state_changed
                 refresh_icon_color tile, state
+                refresh_background_color tile, state
 
             tile.lastChild.style.display = if just_played then "block" else "none"
 
@@ -177,24 +179,50 @@ load_gameboard_state = (gameboard_state, count, last, changes) ->
 
 refresh_icon_color = (tile, state) ->
     for icon in tile.getElementsByTagName('svg')
-        color = "#D9D5D2"
+        color = unfortifiable_tile_color()
         if state == 1 or state == 3
-            color = "#388C62"
+            color = player_1_unfortifiable_tile_color()
         if state == 2 or state == 4
-            color = "#CC7447"
+            color = player_2_unfortifiable_tile_color()
 
         icon.setAttribute "fill", color
 
         icon.setAttribute "width", "100%"
         icon.setAttribute "height", "100%"
 
-refresh_player_plays_count = (plays_count_element, current_count, next_count) ->
+color_from_state = (state) ->
+    color = standard_tile_color()
+    if state == 1 or state == 3
+        color = player_1_color()
+    if state == 2 or state == 4
+        color = player_2_color()
+    color
+
+refresh_background_color = (el, state) ->
+    el.style.backgroundColor = color_from_state(state)
+
+refresh_player_plays_count = (plays_count_element, current_count, next_count, state) ->
     for tile, i in plays_count_element.children
-        tile.className = "micro_tile"
         if i < current_count
-            tile.classList.add "micro_tile_highlighted"
+            highlight_micro_tile tile, state
         else if i < next_count
-            tile.classList.add "micro_tile_plain"
+            fill_micro_tile tile
+        else
+            empty_micro_tile tile
+
+highlight_micro_tile = (micro_tile, state) ->
+    color = color_from_state state
+    micro_tile.style.backgroundColor = color
+    micro_tile.style.borderColor = color
+
+fill_micro_tile = (micro_tile) ->
+    color = standard_tile_color()
+    micro_tile.style.backgroundColor = color
+    micro_tile.style.borderColor = color
+
+empty_micro_tile = (micro_tile) ->
+    micro_tile.style.background = "none"
+    micro_tile.style.borderColor = standard_tile_color()
 
 refresh_tile_state = (tile, state) ->
     changed = false
