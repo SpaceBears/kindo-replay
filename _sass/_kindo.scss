@@ -4,7 +4,8 @@ $tile_count_per_size: 5;
 $tile_size: 46px;
 $tile_margin: 2px;
 $gameboard_size: ($tile_size + 2 * $tile_margin) * $tile_count_per_size;
-$player_card_size: $gameboard_size / 2;
+$player_card_width: $gameboard_size / 2;
+$player_card_height: $player_card_width + 32;
 $player_image_size: 64px;
 $player_highlight_width: $player_image_size * 3 / 88;
 $player_image_highlight_size: $player_image_size + 4 * $player_highlight_width;
@@ -14,6 +15,20 @@ body {
     background-color: #FFF8F2;
     font-family: 'Quicksand', sans-serif;
     color: #736F6D;
+}
+
+p {
+    padding: 6px;
+    text-align: center;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .page {
@@ -26,7 +41,11 @@ body {
     height: $gameboard_size;
     position: relative;
     margin: 0 auto;
-    top: 154px;
+    top: $player_card_height;
+}
+
+#gameboard_container {
+    height: $gameboard_size + $player_card_height;
 }
 
 .tile {
@@ -76,7 +95,8 @@ body {
 .player_card {
     text-align: center;
     position: relative;
-    width: $player_card_size;
+    width: $player_card_width;
+    height: $player_card_height;
 }
 
 .highlight {
