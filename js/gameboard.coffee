@@ -2,7 +2,11 @@
 ---
 
 @setup = () ->
-    fetch_game param(), (game, error) ->
+    build_params()
+    if is_in_game()
+        in_game_setup()
+
+    fetch_game game_id(), (game, error) ->
         if game
             @game = game
             @theme_name = @game.theme
@@ -14,6 +18,9 @@
             document.getElementById("gameboard_container").style.display = "none"
         else
             window.location = "http://kindogame.fr"
+
+in_game_setup = () ->
+    document.getElementById('footer').style.display = "none"
 
 @load_next_gameboard_state = () ->
     if @current_index == null
@@ -31,7 +38,18 @@
         if state or substate
             console.log tile
 
-param = ->
+build_params = () ->
+    @params = {}
+    dict = window.location.search.replace '?', ''
+    for param in dict.split '&'
+        components = param.split '='
+        continue if components.length < 2
+        @params[components[0]] = components[1]
+
+is_in_game = ->
+    @params["ingame"] == "1"
+
+game_id = ->
     return window.location.hash[1..-1]
 
 get = (path, completion) ->
