@@ -1,4 +1,5 @@
 @import "compass-mixins/lib/compass";
+@import "mixins";
 
 $tile_count_per_size: 5;
 $tile_size: 46px;
@@ -42,6 +43,7 @@ a {
     position: relative;
     margin: 0 auto;
     top: $player_card_height;
+    @include select(none);
 }
 
 #gameboard_container {
@@ -97,6 +99,7 @@ a {
     position: relative;
     width: $player_card_width;
     height: $player_card_height;
+    @include select(none);
 }
 
 .highlight {
@@ -144,6 +147,7 @@ a {
 .player_title {
     margin: 8px;
     text-transform: uppercase;
+    @include select(text);
 }
 
 .micro_tile {
