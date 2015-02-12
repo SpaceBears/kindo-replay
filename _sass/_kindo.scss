@@ -11,6 +11,7 @@ $player_image_size: 64px;
 $player_highlight_width: $player_image_size * 3 / 88;
 $player_image_highlight_size: $player_image_size + 4 * $player_highlight_width;
 $player_image_highlight_margin: -2 * $player_highlight_width;
+$control_size: 32px;
 
 body {
     background-color: #FFF8F2;
@@ -158,5 +159,22 @@ a {
     display: inline-block;
     @include border-radius(2px);
     border: solid 1px;
+}
+
+// Controls
+
+#controls {
+    text-align: center;
+    @include select(none);
+}
+
+.control_item {
+    display: inline;
+    margin: 8px;
+
+    & svg {
+        width: $control_size;
+        height: $control_size;
+    }
 }
 

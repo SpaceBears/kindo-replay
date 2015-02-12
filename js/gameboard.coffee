@@ -13,14 +13,12 @@
             setup_game @game.gameboard, @game.player1, @game.player2, @game.max_play_count_by_turn
             @current_index = null
             load_next_gameboard_state()
+            @play() if auto_play()
         else if error
             document.getElementById("error_container").style.display = "block"
             document.getElementById("gameboard_container").style.display = "none"
         else
             window.location = "http://kindogame.fr"
-
-in_game_setup = () ->
-    document.getElementById('footer').style.display = "none"
 
 @load_next_gameboard_state = () ->
     if @current_index == null
@@ -28,7 +26,13 @@ in_game_setup = () ->
     else
         @current_index++
 
-    unless @game.gameboard_states.length > @current_index
+    if @game.gameboard_states.length <= @current_index
+        should_replay = auto_play()
+        @pause()
+        if should_replay
+            @reload()
+            @play()
+            @auto_play = true
         return
 
     gameboard_state = @game.gameboard_states[@current_index]
@@ -37,6 +41,34 @@ in_game_setup = () ->
     load_gameboard_state gameboard_state, count, last, (tile, state, substate) ->
         if state or substate
             console.log tile
+
+@play = () ->
+    return if @interval
+    @interval = setInterval(@load_next_gameboard_state, 800)
+    play_control().style.display = "none"
+    pause_control().style.display = "inline"
+
+@pause = () ->
+    clearInterval @interval
+    @interval = null
+    @auto_play = false
+    play_control().style.display = "inline"
+    pause_control().style.display = "none"
+
+@reload = () ->
+    @pause()
+    @current_index = null
+    @load_next_gameboard_state()
+
+play_control = () ->
+    document.getElementById "play"
+
+pause_control = () ->
+    document.getElementById "pause"
+
+in_game_setup = () ->
+    document.getElementById('footer').style.display = "none"
+    document.getElementById('controls').style.display = "none"
 
 build_params = () ->
     @params = {}
@@ -48,6 +80,10 @@ build_params = () ->
 
 is_in_game = ->
     @params["ingame"] == "1"
+
+auto_play = ->
+    return @auto_play if @auto_play?
+    @auto_play = @params["play"] == "1" || is_in_game()
 
 game_id = ->
     return window.location.hash[1..-1]
@@ -86,8 +122,12 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
     document.body.style.backgroundColor = background_color()
     document.body.style.color = text_color()
 
-    # Players
-    for player, i in [player1, player2]
+    build_players [player1, player2], max_play_count
+    build_gameboard gameboard
+    build_controls()
+
+build_players = (players, max_play_count) ->
+    for player, i in players
         # Image
         image = document.getElementById "player#{i+1}_image"
         image.innerHTML = if i == 0 then "P1" else "P2"
@@ -113,7 +153,7 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
             micro_tile.className = "micro_tile"
             plays_count.appendChild micro_tile
 
-    # Gameboard
+build_gameboard = (gameboard) ->
     count = gameboard.tile_count_by_side
     types = gameboard.tile_types
     tile_size = 50
@@ -195,16 +235,27 @@ load_gameboard_state = (gameboard_state, count, last, changes) ->
 
             changes(tile, state_changed, substate_changed)
 
-refresh_icon_color = (tile, state) ->
-    for icon in tile.getElementsByTagName('svg')
+build_controls = () ->
+    for control in ["play", "pause", "reload"]
+        get "assets/#{control}.svg", (req) ->
+            svg = req.response
+            element = document.getElementById control
+            element.innerHTML = svg
+
+            refresh_icon_color element, 0, text_color()
+
+            element.style.display = "none" if control == "pause"
+
+refresh_icon_color = (tile, state, color = null) ->
+    unless color
         color = unfortifiable_tile_color()
         if state == 1 or state == 3
             color = player_1_unfortifiable_tile_color()
         if state == 2 or state == 4
             color = player_2_unfortifiable_tile_color()
 
+    for icon in tile.getElementsByTagName('svg')
         icon.setAttribute "fill", color
-
         icon.setAttribute "width", "100%"
         icon.setAttribute "height", "100%"
 
