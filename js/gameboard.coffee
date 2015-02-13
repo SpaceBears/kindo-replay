@@ -3,13 +3,16 @@
 
 @setup = () ->
     build_params()
+    @theme_name = param_theme_name()
+    refresh_theme()
     if is_in_game()
         in_game_setup()
 
     fetch_game game_id(), (game, error) ->
         if game
             @game = game
-            @theme_name = @game.theme
+            @theme_name = @game.theme unless @theme_name?
+            refresh_theme()
             setup_game @game.gameboard, @game.player1, @game.player2, @game.max_play_count_by_turn
             @current_index = null
             load_next_gameboard_state()
@@ -81,12 +84,21 @@ build_params = () ->
 is_in_game = ->
     @params["ingame"] == "1"
 
+param_theme_name = ->
+    @params["theme"]
+
 auto_play = ->
     return @auto_play if @auto_play?
     @auto_play = @params["play"] == "1" || is_in_game()
 
 game_id = ->
     return window.location.hash[1..-1]
+
+refresh_theme = ->
+    return unless @theme_name?
+
+    document.body.style.backgroundColor = background_color()
+    document.body.style.color = text_color()
 
 get = (path, completion) ->
     req = new XMLHttpRequest()
@@ -119,9 +131,6 @@ fetch_game = (file_name, completion) ->
             completion null, true
 
 setup_game = (gameboard, player1, player2, max_play_count) ->
-    document.body.style.backgroundColor = background_color()
-    document.body.style.color = text_color()
-
     build_players [player1, player2], max_play_count
     build_gameboard gameboard
     build_controls()
