@@ -11,7 +11,7 @@ $player_image_size: 64px;
 $player_highlight_width: $player_image_size * 3 / 88;
 $player_image_highlight_size: $player_image_size + 4 * $player_highlight_width;
 $player_image_highlight_margin: -2 * $player_highlight_width;
-$control_size: 32px;
+$control_size: 16px;
 
 body {
     background-color: #FFF8F2;
@@ -49,7 +49,7 @@ a {
 }
 
 #gameboard_container {
-    height: $gameboard_size + $player_card_height;
+    height: $gameboard_size + $player_card_height + 16px;
 }
 
 .tile {

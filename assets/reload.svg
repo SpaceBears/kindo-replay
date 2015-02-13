@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg viewBox="0 0 46 46" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <text x="0" y="25">Reload</text>
+<svg viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch Beta 3.3 (11472) - http://www.bohemiancoding.com/sketch -->
+    <title>replay</title>
+    <desc>Created with Sketch Beta.</desc>
+    <defs></defs>
+    <g id="Icons" sketch:type="MSPage">
+        <g id="replay-large-icon-web" sketch:type="MSArtboardGroup">
+            <path d="M3,8.77241467 C3,11.4335382 5.23857611,13.5908049 8,13.5908049 C10.7614239,13.5908049 13,11.4335382 13,8.77241467 C13,8.10713378 13.559644,7.56781712 14.25,7.56781712 C14.940356,7.56781712 15.5,8.10713378 15.5,8.77241467 C15.5,12.7641 12.1421358,16 8,16 C3.85786417,16 0.5,12.7641 0.5,8.77241467 C0.5,4.78072932 3.85786417,1.54482934 8,1.54482934 C8,1.54482934 8.18094367,1.54482934 8.45696865,1.55861995 L8.6657816,0.807625109 C8.90365451,-0.0478836955 9.64436749,-0.255641004 10.3142105,0.338266489 L13.9322059,3.54611441 C14.6047351,4.14240361 14.4234114,4.7824909 13.5351641,4.97407337 L8.7375108,6.00885981 C7.84570143,6.20121057 7.31559143,5.66357788 7.55345408,4.80810594 L7.78976728,3.95820661 C5.12584724,4.06438972 3,6.1791602 3,8.77241467 Z" id="rematch-icon" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
 </svg>
