@@ -95,6 +95,7 @@ game_id = ->
     return window.location.hash[1..-1]
 
 set_theme_name = (name) ->
+    return unless name?
     if name of @themes()
         @theme_name = name
     else
