@@ -3,7 +3,7 @@
 
 @setup = () ->
     build_params()
-    @theme_name = param_theme_name()
+    set_theme_name(param_theme_name())
     refresh_theme()
     if is_in_game()
         in_game_setup()
@@ -11,7 +11,7 @@
     fetch_game game_id(), (game, error) ->
         if game
             @game = game
-            @theme_name = @game.theme unless @theme_name?
+            set_theme_name(@game.theme) unless @theme_name?
             refresh_theme()
             setup_game @game.gameboard, @game.player1, @game.player2, @game.max_play_count_by_turn
             @current_index = null
@@ -93,6 +93,12 @@ auto_play = ->
 
 game_id = ->
     return window.location.hash[1..-1]
+
+set_theme_name = (name) ->
+    if name of @themes()
+        @theme_name = name
+    else
+        @theme_name = "green-orange-light"
 
 refresh_theme = ->
     return unless @theme_name?
