@@ -2,6 +2,7 @@
 ---
 
 @setup = () ->
+    add_gameboard_click_handler()
     build_params()
     set_theme_name(param_theme_name())
     refresh_theme()
@@ -73,7 +74,10 @@ in_game_setup = () ->
     document.getElementById('footer').style.display = "none"
     document.getElementById('controls').style.display = "none"
 
-build_params = () ->
+add_gameboard_click_handler = ->
+    new @ClickHandler document.getElementById "gameboard"
+
+build_params = ->
     @params = {}
     dict = window.location.search.replace '?', ''
     for param in dict.split '&'
