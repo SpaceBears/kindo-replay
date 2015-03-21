@@ -9,7 +9,7 @@ class @ClickHandler
     handleEvent: (event) ->
         switch event.type
             when 'touchstart' then this.onTouchStart event
-            when 'touchmove'  then this.onTouchMove
+            when 'touchmove'  then this.onTouchMove event
             when 'touchend'   then this.onTouchEnd event
 
     onTouchStart: (event) ->
@@ -19,7 +19,7 @@ class @ClickHandler
         @element.addEventListener 'touchmove', this, false
         @element.addEventListener 'touchend', this, false
 
-    onTouchMove: ->
+    onTouchMove: (event) ->
         @moved = true
 
     onTouchEnd: (event) ->
