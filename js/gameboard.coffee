@@ -111,6 +111,9 @@ refresh_theme = ->
 
     document.body.style.backgroundColor = background_color()
     document.body.style.color = text_color()
+    styleSheet = document.styleSheets[0]
+    style = "background: #{player_1_color()}; color: #{light_text_color()};"
+    styleSheet.addRule  "body ::selection", style, 1
 
 get = (path, completion) ->
     req = new XMLHttpRequest()
