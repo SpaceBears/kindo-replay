@@ -2,24 +2,30 @@
 ---
 
 class @ClickHandler
-    constructor: (@element) ->
+    constructor: (@element, @callback) ->
         if window.Touch
             @element.addEventListener 'touchstart', this, false
+        else
+            @element.addEventListener 'click', this, false
 
     handleEvent: (event) ->
         switch event.type
-            when 'touchstart' then this.onTouchStart event
-            when 'touchmove'  then this.onTouchMove event
-            when 'touchend'   then this.onTouchEnd event
+            when 'touchstart' then this.onTouchStart()
+            when 'touchmove'  then this.onTouchMove()
+            when 'touchend'   then this.onTouchEnd()
+            when 'click'      then this.onClick()
 
-    onTouchStart: (event) ->
-        event.preventDefault()
+    onClick: () ->
+        this.onTouchStart()
+        this.onTouchEnd()
+
+    onTouchStart: () ->
         @moved = false
 
         @element.addEventListener 'touchmove', this, false
         @element.addEventListener 'touchend', this, false
 
-    onTouchMove: (event) ->
+    onTouchMove: () ->
         @moved = true
 
     onTouchEnd: (event) ->
@@ -27,7 +33,4 @@ class @ClickHandler
         @element.removeEventListener 'touchend', this, false
 
         unless @moved
-            target = @element
-            event = document.createEvent 'MouseEvents'
-            event.initEvent 'click', true, true
-            target.dispatchEvent event
+            @callback()

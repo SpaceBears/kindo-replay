@@ -75,7 +75,8 @@ in_game_setup = () ->
     document.getElementById('controls').style.display = "none"
 
 add_gameboard_click_handler = ->
-    new @ClickHandler document.getElementById "gameboard"
+    gameboard = document.getElementById "gameboard"
+    new @ClickHandler gameboard, -> load_next_gameboard_state()
 
 build_params = ->
     @params = {}
