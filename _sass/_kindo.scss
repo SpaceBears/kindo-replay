@@ -144,16 +144,29 @@ a {
     font-size: 1.3em;
 }
 
-.player_plays_count {
+.player_plays_count_container {
     margin: 0 auto;
     height: $micro_tile_size + 2 * $micro_tile_border_size;
 }
 
-.player_title {
+.player_plays_count {
+    width: 100%;
+    height: $micro_tile_size + 2 * $micro_tile_border_size;
+}
+
+.player_title, .player_outcome {
     font-size: .85em;
-    margin: 6px 4px;
     text-transform: uppercase;
     @include select(text);
+}
+
+.player_title {
+    margin: 6px 4px;
+}
+
+.player_outcome {
+    margin-top: -4px;
+    display: none;
 }
 
 .micro_tile {

@@ -30,7 +30,9 @@
     else
         @current_index++
 
-    if @game.gameboard_states.length <= @current_index
+    states_count = @game.gameboard_states.length
+
+    if states_count <= @current_index
         should_replay = auto_play()
         @pause()
         if should_replay
@@ -46,6 +48,11 @@
         if state or substate
             console.log tile
 
+    # end of game
+    if states_count == @current_index + 1
+        display_game_outcome()
+
+
 @play = () ->
     return if @interval
     @interval = setInterval(@load_next_gameboard_state, 800)
@@ -60,6 +67,7 @@
     pause_control().style.display = "none"
 
 @reload = () ->
+    hide_game_outcome()
     @pause()
     @current_index = null
     @load_next_gameboard_state()
@@ -115,6 +123,24 @@ refresh_theme = ->
     style = "background: #{player_1_color()}; color: #{light_text_color()};"
     styleSheet.addRule  "body ::selection", style, 1
 
+display_game_outcome = ->
+    return unless @game.game_outcome?
+
+    for i in [1, 2]
+        plays_count = document.getElementById "player#{i}_plays_count"
+        plays_count.style.display = "none"
+        container = document.getElementById "player#{i}_outcome"
+        container.style.display = "block"
+
+hide_game_outcome = ->
+    return unless @game.game_outcome?
+
+    for i in [1, 2]
+        plays_count = document.getElementById "player#{i}_plays_count"
+        plays_count.style.display = "block"
+        container = document.getElementById "player#{i}_outcome"
+        container.style.display = "none"
+
 get = (path, completion) ->
     req = new XMLHttpRequest()
 
@@ -148,6 +174,7 @@ fetch_game = (file_name, completion) ->
 setup_game = (gameboard, player1, player2, max_play_count) ->
     build_players [player1, player2], max_play_count
     build_gameboard gameboard
+    fill_game_outcome()
     build_controls()
 
 build_players = (players, max_play_count) ->
@@ -169,6 +196,10 @@ build_players = (players, max_play_count) ->
         title = document.getElementById "player#{i+1}_title"
         title.innerHTML = player.username
         title.style.color = color_from_state(i+1)
+
+        # Title
+        outcome = document.getElementById "player#{i+1}_outcome"
+        outcome.style.color = color_from_state(i+1)
 
         # plays count
         plays_count = document.getElementById "player#{i+1}_plays_count"
@@ -222,6 +253,21 @@ build_gameboard = (gameboard) ->
 
             # Add to gameboard
             gameboard.appendChild tile
+
+fill_game_outcome = () ->
+    outcome = @game.game_outcome
+    return unless outcome?
+
+    player1_outcome.innerHTML = outcome_string outcome.player1
+    player2_outcome.innerHTML = outcome_string outcome.player2
+
+outcome_string = (outcome) ->
+    switch outcome
+        when "won" then "wins"
+        when "lost" then "loses"
+        when "quit" then "quit"
+        when "time_expired" then "time expired"
+        else ""
 
 load_gameboard_state = (gameboard_state, count, last, changes) ->
     # Players

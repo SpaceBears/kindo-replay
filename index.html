@@ -9,8 +9,11 @@ layout: page
         <div id="player{{ i }}_image_highlight" class="player_image_highlight"></div>
         <div id="player{{ i }}_image" class="player_image"></div>
       </div>
-      <div id="player{{ i }}_title"class="player_title"></div>
-      <div id="player{{ i }}_plays_count"class="player_plays_count"></div>
+      <div id="player{{ i }}_title" class="player_title"></div>
+      <div id="player{{ i }}_plays_count_container" class="player_plays_count_container">
+        <div id="player{{ i }}_plays_count" class="player_plays_count"></div>
+        <div id="player{{ i }}_outcome" class="player_outcome"></div>
+      </div>
     </div>
   {% endfor %}
 
