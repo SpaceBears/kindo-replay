@@ -265,7 +265,7 @@ outcome_string = (outcome) ->
     switch outcome
         when "won" then "wins"
         when "lost" then "loses"
-        when "quit" then "quit"
+        when "quit" then "forfeits"
         when "time_expired" then "time expired"
         else ""
 
