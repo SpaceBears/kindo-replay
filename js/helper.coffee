@@ -1,9 +1,15 @@
 ---
 ---
 
+isMobile = navigator.userAgent.match(/Android/i) ||
+           navigator.userAgent.match(/BlackBerry/i) ||
+           navigator.userAgent.match(/iPhone|iPad|iPod/i) ||
+           navigator.userAgent.match(/Opera Mini/i) ||
+           navigator.userAgent.match(/IEMobile/i)
+
 class @ClickHandler
     constructor: (@element, @callback) ->
-        if window.Touch
+        if isMobile
             @element.addEventListener 'touchstart', this, false
         else
             @element.addEventListener 'click', this, false
