@@ -15,6 +15,7 @@
             set_theme_name(@game.theme) unless @theme_name?
             refresh_theme()
             setup_game @game.gameboard, @game.player1, @game.player2, @game.max_play_count_by_turn
+            add_refresh_layout_handler()
             @current_index = null
             load_next_gameboard_state()
             @play() if auto_play()
@@ -85,6 +86,11 @@ in_game_setup = () ->
 add_gameboard_click_handler = ->
     gameboard = document.getElementById "gameboard"
     new @ClickHandler gameboard, -> load_next_gameboard_state()
+
+add_refresh_layout_handler = ->
+    if @isMobile
+        refresh_layout()
+        window.addEventListener 'resize', refresh_layout
 
 build_params = ->
     @params = {}
@@ -410,4 +416,11 @@ get_object = (array, row, col, count) ->
     if index < length * length
         return array[index]
     return null
+
+refresh_layout = ->
+    layout_handler().reset()
+
+layout_handler = ->
+    return @layout_handler if @layout_handler?
+    @layout_handler = new @LayoutHandler @game.gameboard.tile_count_by_side
 

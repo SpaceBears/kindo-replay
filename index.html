@@ -2,25 +2,28 @@
 layout: page
 ---
 
-<div id="gameboard_container">
+<div id="layout" style="position:absolute; z-index:10; color:white"></div>
+<div id="gameboard_container" style="background-color:brown">
   {% for i in (1..2) %}
-    <div id="player{{ i }}_card" class="player_card">
-      <div id="player{{ i }}_image_container" class="player_image_container">
-        <div id="player{{ i }}_image_highlight" class="player_image_highlight"></div>
-        <div id="player{{ i }}_image" class="player_image"></div>
+  <div id="player{{ i }}_card_container" class="player_card_container" style="background-color:orange">
+    <div id="player{{ i }}_card" class="player_card" style="background-color: black">
+        <div id="player{{ i }}_image_container" class="player_image_container">
+          <div id="player{{ i }}_image_highlight" class="player_image_highlight"></div>
+          <div id="player{{ i }}_image" class="player_image"></div>
+        </div>
+        <div id="player{{ i }}_title" class="player_title"></div>
+        <div id="player{{ i }}_plays_count_container" class="player_plays_count_container">
+          <div id="player{{ i }}_plays_count" class="player_plays_count"></div>
+          <div id="player{{ i }}_outcome" class="player_outcome"></div>
+        </div>
       </div>
-      <div id="player{{ i }}_title" class="player_title"></div>
-      <div id="player{{ i }}_plays_count_container" class="player_plays_count_container">
-        <div id="player{{ i }}_plays_count" class="player_plays_count"></div>
-        <div id="player{{ i }}_outcome" class="player_outcome"></div>
-      </div>
-    </div>
+  </div>
   {% endfor %}
 
-  <div id="gameboard"></div>
+  <div id="gameboard" style="background-color:red"></div>
 </div>
 
-<div id="controls">
+<div id="controls" style="background-color:orange">
   <div class="control_item" id="play" onclick="play()"></div>
   <div class="control_item" id="pause" onclick="pause()"></div>
   <div class="control_item" id="reload" onclick="reload()"></div>

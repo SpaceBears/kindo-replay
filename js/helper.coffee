@@ -1,11 +1,11 @@
 ---
 ---
 
-isMobile = navigator.userAgent.match(/Android/i) ||
-           navigator.userAgent.match(/BlackBerry/i) ||
-           navigator.userAgent.match(/iPhone|iPad|iPod/i) ||
-           navigator.userAgent.match(/Opera Mini/i) ||
-           navigator.userAgent.match(/IEMobile/i)
+@isMobile = navigator.userAgent.match(/Android/i) ||
+            navigator.userAgent.match(/BlackBerry/i) ||
+            navigator.userAgent.match(/iPhone|iPad|iPod/i) ||
+            navigator.userAgent.match(/Opera Mini/i) ||
+            navigator.userAgent.match(/IEMobile/i)
 
 class @ClickHandler
     constructor: (@element, @callback) ->
@@ -16,22 +16,22 @@ class @ClickHandler
 
     handleEvent: (event) ->
         switch event.type
-            when 'touchstart' then this.onTouchStart()
-            when 'touchmove'  then this.onTouchMove()
-            when 'touchend'   then this.onTouchEnd()
-            when 'click'      then this.onClick()
+            when 'touchstart' then @onTouchStart()
+            when 'touchmove'  then @onTouchMove()
+            when 'touchend'   then @onTouchEnd()
+            when 'click'      then @onClick()
 
-    onClick: () ->
-        this.onTouchStart()
-        this.onTouchEnd()
+    onClick: ->
+        @onTouchStart()
+        @onTouchEnd()
 
-    onTouchStart: () ->
+    onTouchStart: ->
         @moved = false
 
         @element.addEventListener 'touchmove', this, false
         @element.addEventListener 'touchend', this, false
 
-    onTouchMove: () ->
+    onTouchMove: ->
         @moved = true
 
     onTouchEnd: (event) ->
@@ -40,3 +40,199 @@ class @ClickHandler
 
         unless @moved
             @callback()
+
+@Layout =
+    Portrait: "portrait"
+    Landscape: "landscape"
+    FlatLandscape: "flat_landscape"
+
+class @LayoutHandler
+    constructor: (@tile_count_by_side) ->
+        @gameboard_max_size = 520
+
+    reset: ->
+        @layout_string = null
+        document.getElementById("layout").innerHTML = @layout()
+        @refresh_layout()
+
+    layout: ->
+        return @layout_string if @layout_string?
+        @layout_string = @measure_layout()
+
+    refresh_layout: ->
+        switch @layout()
+            when Layout.Portrait then @refresh_portrait_layout()
+            when Layout.Landscape then @refresh_landscape_layout()
+            when Layout.FlatLandscape then @refresh_flat_landscape_layout()
+        @refresh_player_image()
+        if @layout() == Layout.Portrait
+            @refresh_portrait_elements_position()
+
+    measure_layout: ->
+        width = window.innerWidth
+        height = window.innerHeight
+
+        ratio = width / height
+
+        if ratio <= 1
+            return Layout.Portrait
+
+        if ratio <= 1.7
+            return Layout.Landscape
+        return Layout.FlatLandscape
+
+    page: ->
+        document.getElementById "page"
+
+    gameboard_container: ->
+        document.getElementById "gameboard_container"
+
+    gameboard: ->
+        document.getElementById "gameboard"
+
+    player_card_container: (num) ->
+        document.getElementById "player#{num}_card_container"
+
+    player_card: (num) ->
+        document.getElementById "player#{num}_card"
+
+    tile: (i, j) ->
+        document.getElementById "#{i}-#{j}"
+
+    player_image_container: (num) ->
+        document.getElementById "player#{num}_image_container"
+
+    player_image: (num) ->
+        document.getElementById "player#{num}_image"
+
+    player_image_highlight: (num) ->
+        document.getElementById "player#{num}_image_highlight"
+
+    refresh_portrait_layout: ->
+        @gameboard_size = @measure_gameboard_size(window.innerWidth)
+        @gameboard_h_margin = (window.innerWidth - @gameboard_size) / 2
+
+        @page().style.width = "#{@gameboard_size}px"
+        @page().style.height = "100%"
+
+        @gameboard_container().style.width = "100%"
+        @gameboard_container().style.height = "100%"
+
+        # Player cards
+        card_width = "#{Math.floor(@gameboard_size / 2)}px"
+        card_margin = "#{@gameboard_h_margin}px"
+        for i in [1, 2]
+            @player_card_container(i).style.width = card_width
+
+        # Board
+        @resize_gameboard(@gameboard_size, @tile_count_by_side)
+
+    refresh_portrait_elements_position: ->
+        player_card_container_height = 0
+        player_card_container_margin_top = 0
+        container_height = @gameboard_container().offsetHeight
+        gameboard_top = 0
+
+        if @gameboard_size < @gameboard_max_size
+            @gameboard_v_margin = @gameboard_h_margin
+            player_card_container_height = container_height - @gameboard_v_margin - @gameboard_size
+            gameboard_top = player_card_container_height
+        else
+            player_cards_gameboard_margin = @gameboard_size / 6
+            player_card_container_height = @player_card_height + 2 * player_cards_gameboard_margin
+            player_card_container_margin_top = (container_height - (player_card_container_height + @gameboard_size + player_cards_gameboard_margin)) / 2
+            gameboard_top = player_card_container_margin_top + player_card_container_height
+
+        for i in [1, 2]
+            @player_card_container(i).style.marginTop = "#{player_card_container_margin_top}px"
+        @refresh_player_cards_position(player_card_container_height)
+        @gameboard().style.top = "#{gameboard_top}px"
+
+
+    refresh_landscape_layout: ->
+        @page().style.width = "100%"
+        @page().style.height = "100%"
+
+        @gameboard_container().style.width = "100%"
+        @gameboard_container().style.height = "100%"
+
+    refresh_flat_landscape_layout: ->
+        @page().style.width = "100%"
+        @page().style.height = "100%"
+
+        @gameboard_container().style.width = "100%"
+        @gameboard_container().style.height = "100%"
+
+        container_height = @gameboard_container().offsetHeight
+        container_width = @gameboard_container().offsetWidth
+        @gameboard_size = @measure_gameboard_size(container_height)
+
+        # Player cards
+        card_width = "#{Math.floor((container_width - @gameboard_size) / 2)}px"
+        for i in [1, 2]
+            @player_card_container(i).style.width = card_width
+            @player_card_container(i).style.height = "100%"
+            @player_card_container(i).style.margin = 0
+
+        # Board
+        @resize_gameboard(@gameboard_size, @tile_count_by_side)
+
+    resize_gameboard: (size, count) ->
+        @gameboard().style.width = "#{size}px"
+        @gameboard().style.height = "#{size}px"
+
+        tile_container_size = size / count
+        tile_margin = tile_container_size / 26
+        tile_size = tile_container_size - 2 * tile_margin
+
+        border_radius = "#{tile_container_size / 12}px"
+
+        for i in [0..count - 1]
+            for j in [0..count - 1]
+                tile = @tile(i, j)
+                tile.style.left = "#{i * tile_container_size}px"
+                tile.style.top = "#{j * tile_container_size}px"
+                tile.style.width = "#{tile_size}px"
+                tile.style.height = "#{tile_size}px"
+                tile.style.margin = "#{tile_margin}px"
+                @set_border_radius tile, border_radius
+
+    refresh_player_image: ->
+        @image_size = Math.round @gameboard_size / 4.2
+        highlight_width = @image_size * 3 / 88
+        highlight_size = @image_size + 4 * highlight_width
+        player_title_height = 18
+        player_title_margin = 6
+        plays_count_height = 10
+        @player_card_height = @image_size + player_title_height + 2 * player_title_margin + plays_count_height
+
+        for i in [1, 2]
+            @player_image_container(i).style.width = "#{@image_size}px"
+            @player_image_container(i).style.height = "#{@image_size}px"
+
+            @player_image(i).style.lineHeight = "#{@image_size}px"
+            @player_image(i).style.fontSize = "#{@image_size / 3.2}px"
+            @set_border_radius @player_image(i), "#{@image_size / 2}px"
+
+            @player_image_highlight(i).style.width = "#{highlight_size}px"
+            @player_image_highlight(i).style.height = "#{highlight_size}px"
+            @player_image_highlight(i).style.margin = "#{-2 * highlight_width}px"
+
+            @player_card(i).style.height = "#{@player_card_height}px"
+
+    refresh_player_cards_position: (container_size) ->
+        margin = (container_size - @player_card_height) / 2
+        for i in [1, 2]
+            @player_card_container(i).style.height = "#{container_size}px"
+            @player_card(i).style.marginTop = "#{margin}px"
+            @player_card(i).style.marginBottom = "#{margin}px"
+
+    set_border_radius: (el, border_radius) ->
+        el.style.borderRadius = border_radius
+        el.style.MozBorderRadius = border_radius
+        el.style.WebkitBorderRadius = border_radius
+
+    measure_gameboard_size: (in_size) ->
+        min_margin = in_size / @tile_count_by_side / 3.5
+        tile_size = Math.floor((in_size - 2 * min_margin) / @tile_count_by_side)
+        Math.min(tile_size * @tile_count_by_side, @gameboard_max_size)
