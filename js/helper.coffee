@@ -173,9 +173,11 @@ class @LayoutHandler
             @player_card_container(i).style.width = card_width
             @player_card_container(i).style.height = "100%"
             @player_card_container(i).style.margin = 0
+        @refresh_player_cards_position()
 
         # Board
         @resize_gameboard(@gameboard_size, @tile_count_by_side)
+        @gameboard().style.top = "#{Math.round((container_height - @gameboard_size) / 2)}px"
 
     resize_gameboard: (size, count) ->
         @gameboard().style.width = "#{size}px"
@@ -221,6 +223,8 @@ class @LayoutHandler
             @player_card(i).style.height = "#{@player_card_height}px"
 
     refresh_player_cards_position: (container_size) ->
+        unless container_size?
+            container_size = @player_card_container(1).offsetHeight
         margin = (container_size - @player_card_height) / 2
         for i in [1, 2]
             @player_card_container(i).style.height = "#{container_size}px"
