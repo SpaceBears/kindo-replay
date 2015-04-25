@@ -49,12 +49,15 @@ a {
     margin: 0 auto;
 }
 
+#gameboard_wrapper {
+    margin: 0 auto;
+    padding-top: $player_card_container_height;
+}
+
 #gameboard {
     width: $gameboard_size;
     height: $gameboard_size;
     position: relative;
-    margin: 0 auto;
-    top: $player_card_container_height;
     @include select(none);
 }
 
@@ -107,7 +110,6 @@ a {
 
 // Player
 .player_card_container {
-    position: relative;
     width: $player_card_container_width;
     height: $player_card_container_height;
 }

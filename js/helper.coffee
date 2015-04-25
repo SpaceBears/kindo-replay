@@ -87,6 +87,9 @@ class @LayoutHandler
     gameboard_container: ->
         document.getElementById "gameboard_container"
 
+    gameboard_wrapper: ->
+        document.getElementById "gameboard_wrapper"
+
     gameboard: ->
         document.getElementById "gameboard"
 
@@ -124,6 +127,9 @@ class @LayoutHandler
         for i in [1, 2]
             @player_card_container(i).style.width = card_width
 
+        @player_card_container(2).style.clear = "none"
+        @player_card_container(2).style.float = "right"
+
         # Board
         @resize_gameboard(@gameboard_size, @tile_count_by_side)
 
@@ -146,7 +152,10 @@ class @LayoutHandler
         for i in [1, 2]
             @player_card_container(i).style.marginTop = "#{player_card_container_margin_top}px"
         @refresh_player_cards_position(player_card_container_height)
-        @gameboard().style.top = "#{gameboard_top}px"
+        @gameboard_wrapper().style.paddingTop = "#{gameboard_top}px"
+        @gameboard_wrapper().style.paddingLeft = 0
+        @gameboard_wrapper().style.width = "#{@gameboard_size}px"
+        @gameboard_wrapper().style.margin = "0 auto"
 
 
     refresh_landscape_layout: ->
@@ -155,6 +164,31 @@ class @LayoutHandler
 
         @gameboard_container().style.width = "100%"
         @gameboard_container().style.height = "100%"
+
+        container_height = @gameboard_container().offsetHeight
+        container_width = @gameboard_container().offsetWidth
+        @gameboard_size = @measure_gameboard_size(container_height)
+        @gameboard_v_margin = Math.round((container_height - @gameboard_size) / 2)
+
+        # Player cards
+        card_width = container_width - @gameboard_size - @gameboard_v_margin
+        card_height = Math.floor @gameboard_size / 2
+        for i in [1, 2]
+            @player_card_container(i).style.width = "#{card_width}px"
+            @player_card_container(i).style.height = "#{card_height}px"
+
+        @player_card_container(1).style.marginTop = "#{@gameboard_v_margin}px"
+        @player_card_container(2).style.clear = "both"
+        @player_card_container(2).style.float = "left"
+
+        @refresh_player_cards_position()
+
+        # Board
+        @resize_gameboard(@gameboard_size, @tile_count_by_side)
+        @gameboard_wrapper().style.paddingTop = "#{@gameboard_v_margin}px"
+        @gameboard_wrapper().style.paddingLeft = "#{card_width}px"
+        @gameboard_wrapper().style.width = "#{@gameboard_size}px"
+        @gameboard_wrapper().style.margin = 0
 
     refresh_flat_landscape_layout: ->
         @page().style.width = "100%"
@@ -173,11 +207,19 @@ class @LayoutHandler
             @player_card_container(i).style.width = card_width
             @player_card_container(i).style.height = "100%"
             @player_card_container(i).style.margin = 0
+
+        @player_card_container(2).style.clear = "none"
+        @player_card_container(2).style.float = "right"
+
         @refresh_player_cards_position()
 
         # Board
         @resize_gameboard(@gameboard_size, @tile_count_by_side)
-        @gameboard().style.top = "#{Math.round((container_height - @gameboard_size) / 2)}px"
+        @gameboard_wrapper().style.paddingTop = "#{Math.round((container_height - @gameboard_size) / 2)}px"
+        @gameboard_wrapper().style.paddingLeft = 0
+        @gameboard_wrapper().style.width = "#{@gameboard_size}px"
+        @gameboard_wrapper().style.margin = "0 auto"
+
 
     resize_gameboard: (size, count) ->
         @gameboard().style.width = "#{size}px"
