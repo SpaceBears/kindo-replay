@@ -67,6 +67,8 @@ class @LayoutHandler
         @refresh_player_image()
         if @layout() == Layout.Portrait
             @refresh_portrait_elements_position()
+        else
+            @refresh_player_cards_position()
 
     measure_layout: ->
         width = window.innerWidth
@@ -144,7 +146,7 @@ class @LayoutHandler
             player_card_container_height = container_height - @gameboard_v_margin - @gameboard_size
             gameboard_top = player_card_container_height
         else
-            player_cards_gameboard_margin = @gameboard_size / 6
+            player_cards_gameboard_margin = Math.min @gameboard_size / 6, Math.round((container_height - @player_card_height - @gameboard_size) / 3)
             player_card_container_height = @player_card_height + 2 * player_cards_gameboard_margin
             player_card_container_margin_top = (container_height - (player_card_container_height + @gameboard_size + player_cards_gameboard_margin)) / 2
             gameboard_top = player_card_container_margin_top + player_card_container_height
@@ -176,12 +178,12 @@ class @LayoutHandler
         for i in [1, 2]
             @player_card_container(i).style.width = "#{card_width}px"
             @player_card_container(i).style.height = "#{card_height}px"
+            @player_card_container(i).style.margin = 0
 
         @player_card_container(1).style.marginTop = "#{@gameboard_v_margin}px"
         @player_card_container(2).style.clear = "both"
         @player_card_container(2).style.float = "left"
 
-        @refresh_player_cards_position()
 
         # Board
         @resize_gameboard(@gameboard_size, @tile_count_by_side)
@@ -210,8 +212,6 @@ class @LayoutHandler
 
         @player_card_container(2).style.clear = "none"
         @player_card_container(2).style.float = "right"
-
-        @refresh_player_cards_position()
 
         # Board
         @resize_gameboard(@gameboard_size, @tile_count_by_side)
