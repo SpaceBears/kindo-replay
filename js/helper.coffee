@@ -118,15 +118,22 @@ class @LayoutHandler
     player_image_highlight: (num) ->
         document.getElementById "player#{num}_image_highlight"
 
+    controls: ->
+        document.getElementById "controls"
+
     refresh_portrait_layout: ->
         @gameboard_size = @measure_gameboard_size(window.innerWidth)
         @gameboard_h_margin = (window.innerWidth - @gameboard_size) / 2
 
         @page().style.width = "#{@gameboard_size}px"
         @page().style.height = "100%"
+        page_height = @page().offsetHeight
+
+        controls_height = Math.round @gameboard_size / 14
+        @refresh_controls_height controls_height
 
         @gameboard_container().style.width = "100%"
-        @gameboard_container().style.height = "100%"
+        @gameboard_container().style.height = "#{page_height - controls_height}px"
 
         # Player cards
         card_width = "#{Math.floor(@gameboard_size / 2)}px"
@@ -310,3 +317,10 @@ class @LayoutHandler
             tile.style.height = "#{size}px"
             tile.style.borderWidth = "#{border}px"
 
+    refresh_controls_height: (height) ->
+        @controls().style.height = "#{height}px"
+        @controls().style.lineHeight = "#{height}px"
+        for control in @controls().children
+            control.style.height = "#{height}px"
+            control.style.width = "#{height}px"
+            control.style.margin = "0 #{height / 4}px"

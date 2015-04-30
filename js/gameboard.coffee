@@ -58,13 +58,13 @@
     return if @interval
     @interval = setInterval(@load_next_gameboard_state, 800)
     play_control().style.display = "none"
-    pause_control().style.display = "inline"
+    pause_control().style.display = "inline-block"
 
 @pause = () ->
     clearInterval @interval
     @interval = null
     @auto_play = false
-    play_control().style.display = "inline"
+    play_control().style.display = "inline-block"
     pause_control().style.display = "none"
 
 @reload = () ->

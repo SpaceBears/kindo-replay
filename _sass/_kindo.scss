@@ -201,15 +201,13 @@ a {
 #controls {
     text-align: center;
     @include select(none);
+    height: $control_size;
 }
 
 .control_item {
-    display: inline;
-    margin: 8px;
-
-    & svg {
-        width: $control_size;
-        height: $control_size;
-    }
+    display: inline-block;
+    height: $control_size;
+    width: $control_size;
+    margin: 0 $control_size / 4;
 }
 

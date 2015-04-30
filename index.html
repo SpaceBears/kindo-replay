@@ -3,7 +3,7 @@ layout: page
 ---
 
 <div id="layout" style="position:absolute; z-index:10; color:white"></div>
-<div id="gameboard_container" style="background-color:brown">
+<div id="gameboard_container">
   {% for i in (1..2) %}
   <div id="player{{ i }}_card_container" class="player_card_container">
     <div id="player{{ i }}_card" class="player_card">
@@ -25,7 +25,7 @@ layout: page
   </div>
 </div>
 
-<div id="controls" style="background-color:orange">
+<div id="controls">
   <div class="control_item" id="play" onclick="play()"></div>
   <div class="control_item" id="pause" onclick="pause()"></div>
   <div class="control_item" id="reload" onclick="reload()"></div>
