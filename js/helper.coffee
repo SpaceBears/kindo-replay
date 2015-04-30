@@ -52,7 +52,6 @@ class @LayoutHandler
 
     reset: ->
         @layout_string = null
-        document.getElementById("layout").innerHTML = @layout()
         @refresh_layout()
 
     layout: ->
@@ -100,6 +99,12 @@ class @LayoutHandler
 
     player_card: (num) ->
         document.getElementById "player#{num}_card"
+
+    player_title: (num) ->
+        document.getElementById "player#{num}_title"
+
+    player_outcome: (num) ->
+        document.getElementById "player#{num}_outcome"
 
     tile: (i, j) ->
         document.getElementById "#{i}-#{j}"
@@ -245,9 +250,9 @@ class @LayoutHandler
         @image_size = Math.round @gameboard_size / 4.2
         highlight_width = @image_size * 3 / 88
         highlight_size = @image_size + 4 * highlight_width
-        player_title_height = 18
-        player_title_margin = 6
-        plays_count_height = 10
+        player_title_height = Math.max Math.round(@image_size / 8.5), 7
+        player_title_margin = Math.max Math.round(@image_size / 22.5), 2
+        plays_count_height = Math.max Math.round(@image_size / 9), 4
         @player_card_height = @image_size + player_title_height + 2 * player_title_margin + plays_count_height
 
         for i in [1, 2]
@@ -261,6 +266,15 @@ class @LayoutHandler
             @player_image_highlight(i).style.width = "#{highlight_size}px"
             @player_image_highlight(i).style.height = "#{highlight_size}px"
             @player_image_highlight(i).style.margin = "#{-2 * highlight_width}px"
+
+            @player_title(i).style.fontSize = "#{player_title_height}px"
+            @player_title(i).style.lineHeight = "#{player_title_height}px"
+            @player_title(i).style.marginTop = "#{player_title_margin}px"
+            @player_title(i).style.marginBottom = "#{player_title_margin}px"
+            @player_outcome(i).style.fontSize = "#{player_title_height}px"
+            @player_outcome(i).style.lineHeight = "#{player_title_height}px"
+
+            @refresh_micro_tile i, plays_count_height
 
             @player_card(i).style.height = "#{@player_card_height}px"
 
@@ -282,3 +296,17 @@ class @LayoutHandler
         min_margin = in_size / @tile_count_by_side / 3.5
         tile_size = Math.floor((in_size - 2 * min_margin) / @tile_count_by_side)
         Math.min(tile_size * @tile_count_by_side, @gameboard_max_size)
+
+    refresh_micro_tile: (num, in_size) ->
+        unit = in_size / 10
+        border = Math.max Math.round(unit), 1
+        size = Math.round 8 * unit
+        margin = Math.round 2 * unit
+
+        for tile in document.getElementById("player#{num}_plays_count").children
+            tile.style.margin = "0 #{margin}px"
+            @set_border_radius tile, "#{2 * unit}px"
+            tile.style.width = "#{size}px"
+            tile.style.height = "#{size}px"
+            tile.style.borderWidth = "#{border}px"
+

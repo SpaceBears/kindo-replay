@@ -171,12 +171,14 @@ a {
 
 .player_title, .player_outcome {
     font-size: .85em;
+    line-height: .85em;
     text-transform: uppercase;
     @include select(text);
 }
 
 .player_title {
     margin: 6px 4px;
+    white-space: nowrap;
 }
 
 .player_outcome {
