@@ -283,9 +283,9 @@ class @LayoutHandler
         @image_size = Math.round @gameboard_size / 4.2
         highlight_width = @image_size * 3 / 88
         highlight_size = @image_size + 4 * highlight_width
-        player_title_height = Math.max Math.round(@image_size / 8.5), 7
-        player_title_margin = Math.max Math.round(@image_size / 22.5), 2
-        plays_count_height = Math.max Math.round(@image_size / 9), 4
+        player_title_height = Math.max Math.round(@image_size / 6.4), 7
+        player_title_margin = Math.max Math.round(@image_size / 20), 2
+        plays_count_height = Math.max Math.round(@image_size / 8.6), 4
         @player_card_height = @image_size + player_title_height + 2 * player_title_margin + plays_count_height
 
         for i in [1, 2]
