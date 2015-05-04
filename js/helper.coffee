@@ -129,11 +129,11 @@ class @LayoutHandler
         @page().style.height = "100%"
         page_height = @page().offsetHeight
 
-        controls_height = Math.round @gameboard_size / 14
+        controls_height = @controls_height @gameboard_size
         @refresh_controls_height controls_height
 
         @gameboard_container().style.width = "100%"
-        @gameboard_container().style.height = "#{page_height - controls_height}px"
+        @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         # Player cards
         card_width = "#{Math.floor(@gameboard_size / 2)}px"
@@ -175,9 +175,15 @@ class @LayoutHandler
     refresh_landscape_layout: ->
         @page().style.width = "100%"
         @page().style.height = "100%"
+        page_height = @page().offsetHeight
+
+
+        @gameboard_size = @measure_gameboard_size(page_height)
+        controls_height = @controls_height @gameboard_size
+        @refresh_controls_height controls_height
 
         @gameboard_container().style.width = "100%"
-        @gameboard_container().style.height = "100%"
+        @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         container_height = @gameboard_container().offsetHeight
         container_width = @gameboard_container().offsetWidth
@@ -207,9 +213,14 @@ class @LayoutHandler
     refresh_flat_landscape_layout: ->
         @page().style.width = "100%"
         @page().style.height = "100%"
+        page_height = @page().offsetHeight
+
+        @gameboard_size = @measure_gameboard_size(page_height)
+        controls_height = @controls_height @gameboard_size
+        @refresh_controls_height controls_height
 
         @gameboard_container().style.width = "100%"
-        @gameboard_container().style.height = "100%"
+        @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         container_height = @gameboard_container().offsetHeight
         container_width = @gameboard_container().offsetWidth
@@ -320,7 +331,12 @@ class @LayoutHandler
     refresh_controls_height: (height) ->
         @controls().style.height = "#{height}px"
         @controls().style.lineHeight = "#{height}px"
+        @controls().style.marginBottom = "#{height}px"
         for control in @controls().children
             control.style.height = "#{height}px"
             control.style.width = "#{height}px"
             control.style.margin = "0 #{height / 4}px"
+
+    controls_height: (gameboard_size) ->
+        Math.round gameboard_size / 14
+
