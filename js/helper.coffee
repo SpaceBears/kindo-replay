@@ -127,13 +127,18 @@ class @LayoutHandler
 
         @page().style.width = "#{@gameboard_size}px"
         @page().style.height = "100%"
-        page_height = @page().offsetHeight
 
-        controls_height = @controls_height @gameboard_size
-        @refresh_controls_height controls_height
+        if @controls_hidden()
+            @gameboard_container().style.height = "100%"
+        else
+            page_height = @page().offsetHeight
+
+            controls_height = @controls_height @gameboard_size
+            @refresh_controls_height controls_height
+
+            @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         @gameboard_container().style.width = "100%"
-        @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         # Player cards
         card_width = "#{Math.floor(@gameboard_size / 2)}px"
@@ -175,15 +180,20 @@ class @LayoutHandler
     refresh_landscape_layout: ->
         @page().style.width = "100%"
         @page().style.height = "100%"
-        page_height = @page().offsetHeight
 
 
-        @gameboard_size = @measure_gameboard_size(page_height)
-        controls_height = @controls_height @gameboard_size
-        @refresh_controls_height controls_height
+        if @controls_hidden()
+            @gameboard_container().style.height = "100%"
+        else
+            page_height = @page().offsetHeight
+
+            @gameboard_size = @measure_gameboard_size(page_height)
+            controls_height = @controls_height @gameboard_size
+            @refresh_controls_height controls_height
+
+            @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         @gameboard_container().style.width = "100%"
-        @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         container_height = @gameboard_container().offsetHeight
         container_width = @gameboard_container().offsetWidth
@@ -213,14 +223,19 @@ class @LayoutHandler
     refresh_flat_landscape_layout: ->
         @page().style.width = "100%"
         @page().style.height = "100%"
-        page_height = @page().offsetHeight
 
-        @gameboard_size = @measure_gameboard_size(page_height)
-        controls_height = @controls_height @gameboard_size
-        @refresh_controls_height controls_height
+        if @controls_hidden()
+            @gameboard_container().style.height = "100%"
+        else
+            page_height = @page().offsetHeight
+
+            @gameboard_size = @measure_gameboard_size(page_height)
+            controls_height = @controls_height @gameboard_size
+            @refresh_controls_height controls_height
+
+            @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         @gameboard_container().style.width = "100%"
-        @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
         container_height = @gameboard_container().offsetHeight
         container_width = @gameboard_container().offsetWidth
@@ -339,4 +354,7 @@ class @LayoutHandler
 
     controls_height: (gameboard_size) ->
         Math.round gameboard_size / 14
+
+    controls_hidden: ->
+        @controls().style.display == "none"
 
