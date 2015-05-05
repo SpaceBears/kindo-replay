@@ -422,5 +422,5 @@ refresh_layout = ->
 
 layout_handler = ->
     return @layout_handler if @layout_handler?
-    @layout_handler = new @LayoutHandler @game.gameboard.tile_count_by_side
+    @layout_handler = new @LayoutHandler @game.gameboard.tile_count_by_side, is_in_game()
 

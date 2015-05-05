@@ -47,7 +47,7 @@ class @ClickHandler
     FlatLandscape: "flat_landscape"
 
 class @LayoutHandler
-    constructor: (@tile_count_by_side) ->
+    constructor: (@tile_count_by_side, @is_in_game) ->
         @gameboard_max_size = 520
 
     reset: ->
@@ -161,7 +161,7 @@ class @LayoutHandler
         gameboard_top = 0
 
         if @gameboard_size < @gameboard_max_size
-            @gameboard_v_margin = @gameboard_h_margin
+            @gameboard_v_margin = if @is_in_game then 0 else @gameboard_h_margin
             player_card_container_height = container_height - @gameboard_v_margin - @gameboard_size
             gameboard_top = player_card_container_height
         else
@@ -363,8 +363,8 @@ class @LayoutHandler
     measure_container_height: (ideal_height, gameboard_size, margin) ->
         image_size = @measure_image_size(gameboard_size)
         image_height = @player_image_sizes(image_size)[0]
-        console.log image_size
-        Math.max ideal_height, image_size + gameboard_size + 3 * margin
+        margins = if @is_in_game then 2 * margin else 3 * margin
+        Math.max ideal_height, image_size + gameboard_size + margins
 
     player_image_sizes: (image_size) ->
         h_w = image_size * 3 / 88
