@@ -127,16 +127,18 @@ class @LayoutHandler
 
         @page().style.width = "#{@gameboard_size}px"
         @page().style.height = "100%"
+        page_height = @page().offsetHeight
 
         if @controls_hidden()
-            @gameboard_container().style.height = "100%"
+            height = page_height
         else
-            page_height = @page().offsetHeight
-
             controls_height = @controls_height @gameboard_size
             @refresh_controls_height controls_height
+            height = page_height - 2 * controls_height
 
-            @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
+        margin = Math.min @min_margin(window.innerWidth), @gameboard_h_margin
+        container_height = @measure_container_height height, @gameboard_size, margin
+        @gameboard_container().style.height = "#{container_height}px"
 
         @gameboard_container().style.width = "100%"
 
@@ -175,7 +177,6 @@ class @LayoutHandler
         @gameboard_wrapper().style.paddingLeft = 0
         @gameboard_wrapper().style.width = "#{@gameboard_size}px"
         @gameboard_wrapper().style.margin = "0 auto"
-
 
     refresh_landscape_layout: ->
         @page().style.width = "100%"
@@ -280,13 +281,8 @@ class @LayoutHandler
                 @set_border_radius tile, border_radius
 
     refresh_player_image: ->
-        @image_size = Math.round @gameboard_size / 4.2
-        highlight_width = @image_size * 3 / 88
-        highlight_size = @image_size + 4 * highlight_width
-        player_title_height = Math.max Math.round(@image_size / 6.4), 7
-        player_title_margin = Math.max Math.round(@image_size / 20), 2
-        plays_count_height = Math.max Math.round(@image_size / 8.6), 4
-        @player_card_height = @image_size + player_title_height + 2 * player_title_margin + plays_count_height
+        @image_size = @measure_image_size @gameboard_size
+        [@player_card_height, t_h, t_m, c_h, h_s, h_w] = @player_image_sizes @image_size
 
         for i in [1, 2]
             @player_image_container(i).style.width = "#{@image_size}px"
@@ -296,18 +292,19 @@ class @LayoutHandler
             @player_image(i).style.fontSize = "#{@image_size / 3.2}px"
             @set_border_radius @player_image(i), "#{@image_size / 2}px"
 
-            @player_image_highlight(i).style.width = "#{highlight_size}px"
-            @player_image_highlight(i).style.height = "#{highlight_size}px"
-            @player_image_highlight(i).style.margin = "#{-2 * highlight_width}px"
+            @player_image_highlight(i).style.width = "#{h_s}px"
+            @player_image_highlight(i).style.height = "#{h_s}px"
+            @player_image_highlight(i).style.margin = "#{-2 * h_w}px"
 
-            @player_title(i).style.fontSize = "#{player_title_height}px"
-            @player_title(i).style.lineHeight = "#{player_title_height}px"
-            @player_title(i).style.marginTop = "#{player_title_margin}px"
-            @player_title(i).style.marginBottom = "#{player_title_margin}px"
-            @player_outcome(i).style.fontSize = "#{player_title_height}px"
-            @player_outcome(i).style.lineHeight = "#{player_title_height}px"
+            @player_title(i).style.fontSize = "#{t_h}px"
+            @player_title(i).style.lineHeight = "#{t_h}px"
+            @player_title(i).style.marginTop = "#{t_m}px"
+            @player_title(i).style.marginBottom = "#{t_m}px"
+            @player_outcome(i).style.fontSize = "#{t_h}px"
+            @player_outcome(i).style.lineHeight = "#{t_h}px"
+            @player_outcome(i).style.marginTop = "-#{Math.round t_h / 5}px"
 
-            @refresh_micro_tile i, plays_count_height
+            @refresh_micro_tile i, c_h
 
             @player_card(i).style.height = "#{@player_card_height}px"
 
@@ -325,9 +322,11 @@ class @LayoutHandler
         el.style.MozBorderRadius = border_radius
         el.style.WebkitBorderRadius = border_radius
 
+    min_margin: (in_size) ->
+        in_size / @tile_count_by_side / 3.5
+
     measure_gameboard_size: (in_size) ->
-        min_margin = in_size / @tile_count_by_side / 3.5
-        tile_size = Math.floor((in_size - 2 * min_margin) / @tile_count_by_side)
+        tile_size = Math.floor((in_size - 2 * @min_margin(in_size)) / @tile_count_by_side)
         Math.min(tile_size * @tile_count_by_side, @gameboard_max_size)
 
     refresh_micro_tile: (num, in_size) ->
@@ -357,4 +356,22 @@ class @LayoutHandler
 
     controls_hidden: ->
         @controls().style.display == "none"
+
+    measure_image_size: (gameboard_size) ->
+        Math.round gameboard_size / 4.2
+
+    measure_container_height: (ideal_height, gameboard_size, margin) ->
+        image_size = @measure_image_size(gameboard_size)
+        image_height = @player_image_sizes(image_size)[0]
+        console.log image_size
+        Math.max ideal_height, image_size + gameboard_size + 3 * margin
+
+    player_image_sizes: (image_size) ->
+        h_w = image_size * 3 / 88
+        h_s = image_size + 4 * h_w
+        t_h = Math.max Math.round(image_size / 6.4), 7
+        t_m = Math.max Math.round(image_size / 20), 2
+        c_h = Math.max Math.round(image_size / 8.6), 4
+        height = image_size + t_h + 2 * t_m + c_h
+        [height, t_h, t_m, c_h, h_s, h_w]
 
