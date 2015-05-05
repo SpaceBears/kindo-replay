@@ -5,8 +5,9 @@ $tile_count_per_size: 5;
 $tile_size: 46px;
 $tile_margin: 2px;
 $gameboard_size: ($tile_size + 2 * $tile_margin) * $tile_count_per_size;
-$player_card_width: $gameboard_size / 2;
-$player_card_height: $player_card_width + 32;
+$player_card_container_width: $gameboard_size / 2;
+$player_card_container_height: $player_card_container_width + 32;
+$player_card_height: 104px;
 $player_image_size: 64px;
 $player_highlight_width: $player_image_size * 3 / 88;
 $player_image_highlight_size: $player_image_size + 4 * $player_highlight_width;
@@ -14,6 +15,13 @@ $player_image_highlight_margin: -2 * $player_highlight_width;
 $control_size: 16px;
 $micro_tile_size: 8px;
 $micro_tile_border_size: 1px;
+
+html, body {
+    margin: 0;
+    padding:0;
+    width: 100%;
+    height: 100%;
+}
 
 body {
     background-color: #FFF8F2;
@@ -36,22 +44,25 @@ a {
     }
 }
 
-.page {
+#page {
     width: $gameboard_size;
     margin: 0 auto;
+}
+
+#gameboard_wrapper {
+    margin: 0 auto;
+    padding-top: $player_card_container_height;
 }
 
 #gameboard {
     width: $gameboard_size;
     height: $gameboard_size;
     position: relative;
-    margin: 0 auto;
-    top: $player_card_height;
     @include select(none);
 }
 
 #gameboard_container {
-    height: $gameboard_size + $player_card_height + 16px;
+    height: $gameboard_size + $player_card_container_height + 16px;
 }
 
 .tile {
@@ -98,11 +109,17 @@ a {
 }
 
 // Player
+.player_card_container {
+    width: $player_card_container_width;
+    height: $player_card_container_height;
+}
+
 .player_card {
-    text-align: center;
-    position: relative;
-    width: $player_card_width;
+    width: 100%;
     height: $player_card_height;
+    margin: (($player_card_container_height - $player_card_height) / 2) 0;
+    vertical-align: middle;
+    text-align: center;
     @include select(none);
 }
 
@@ -112,19 +129,18 @@ a {
     }
 }
 
-#player1_card {
+#player1_card_container {
     float: left;
 }
 
-#player2_card {
+#player2_card_container {
     float: right;
 }
 
 .player_image_container {
-    position: relative;
+    margin: 0 auto;
     width: $player_image_size;
     height: $player_image_size;
-    margin: 20px auto 0;
 }
 
 .player_image_highlight {
@@ -136,11 +152,10 @@ a {
 }
 
 .player_image {
-    position: absolute;
     width: 100%;
     height: 100%;
     @include border-radius($player_image_size / 2);
-    line-height: 64px;
+    line-height: $player_image_size;
     font-size: 1.3em;
 }
 
@@ -156,12 +171,14 @@ a {
 
 .player_title, .player_outcome {
     font-size: .85em;
+    line-height: .85em;
     text-transform: uppercase;
     @include select(text);
 }
 
 .player_title {
     margin: 6px 4px;
+    white-space: nowrap;
 }
 
 .player_outcome {
@@ -184,15 +201,13 @@ a {
 #controls {
     text-align: center;
     @include select(none);
+    height: $control_size;
 }
 
 .control_item {
-    display: inline;
-    margin: 8px;
-
-    & svg {
-        width: $control_size;
-        height: $control_size;
-    }
+    display: inline-block;
+    height: $control_size;
+    width: $control_size;
+    margin: 0 $control_size / 4;
 }
 
