@@ -57,6 +57,8 @@
     # end of game
     if @states_count == @current_index + 1
         display_game_outcome()
+    else
+        hide_game_outcome()
 
 @play = () ->
     return if @interval
