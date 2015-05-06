@@ -17,7 +17,12 @@
             refresh_theme()
             setup_game @game.gameboard, @game.player1, @game.player2, @game.max_play_count_by_turn
             add_refresh_layout_handler()
-            @current_index = null
+            if param_turn_count()
+                @current_index = param_turn_count()
+                @current_index = Math.max(0, Math.min(@current_index, @states_count - 1))
+                @current_index--
+            else
+                @current_index = null
             load_next_gameboard_state()
             @play() if auto_play()
         else if error
@@ -32,7 +37,6 @@
     else
         @current_index++
 
-
     if @states_count <= @current_index
         should_replay = auto_play()
         @pause()
@@ -43,6 +47,7 @@
         return
     else
         update_slider_knob @current_index
+        update_url()
 
     @load_current_gameboard_state()
 
@@ -94,7 +99,11 @@ add_handlers = ->
     new @ClickHandler gameboard, () -> load_next_gameboard_state()
 
     slider = document.getElementById "slider"
-    new @DragHandler slider, (e, start) ->
+    new @DragHandler slider, (e, start, end) ->
+        if end
+            update_url()
+            return
+
         window.pause()
         absolute_position = 0
         if window.isMobile
@@ -126,6 +135,9 @@ is_in_game = ->
 
 param_theme_name = ->
     @params["theme"]
+
+param_turn_count = ->
+    @params["turn"]
 
 auto_play = ->
     return @auto_play if @auto_play?
@@ -519,4 +531,11 @@ update_slider_knob = (index, animated = true) ->
         knob.animate {cx: position}, 250, "ease-in-out"
     else
         knob.attr "cx", position
+
+update_url = ->
+    id = game_id()
+    @params["turn"] = @current_index
+    array = Object.keys(@params).map (key) -> "#{key}=#{@params[key]}"
+    params_string = array.join '&'
+    window.history.replaceState {}, "", "/?#{params_string}##{id}"
 

@@ -59,7 +59,7 @@ class @DragHandler
             when 'mouseup'    then @onTouchEnd()
 
     onTouchStart: (event) ->
-        @callback(event, true)
+        @callback(event, true, false)
 
         if isMobile
             document.addEventListener 'touchmove', this, false
@@ -69,9 +69,10 @@ class @DragHandler
             document.addEventListener 'mouseup', this, false
 
     onTouchMove: (event) ->
-        @callback(event, false)
+        @callback(event, false, false)
 
     onTouchEnd: ->
+        @callback(event, false, true)
         if isMobile
             document.removeEventListener 'touchmove', this, false
             document.removeEventListener 'touchend', this, false
