@@ -2,7 +2,7 @@
 ---
 
 @setup = () ->
-    add_gameboard_click_handler()
+    add_handlers()
     build_params()
     set_theme_name(param_theme_name())
     refresh_theme()
@@ -12,6 +12,7 @@
     fetch_game game_id(), (game, error) ->
         if game
             @game = game
+            @states_count = @game.gameboard_states.length
             set_theme_name(@game.theme) unless @theme_name?
             refresh_theme()
             setup_game @game.gameboard, @game.player1, @game.player2, @game.max_play_count_by_turn
@@ -31,9 +32,8 @@
     else
         @current_index++
 
-    states_count = @game.gameboard_states.length
 
-    if states_count <= @current_index
+    if @states_count <= @current_index
         should_replay = auto_play()
         @pause()
         if should_replay
@@ -41,7 +41,12 @@
             @play()
             @auto_play = true
         return
+    else
+        update_slider_knob @current_index
 
+    @load_current_gameboard_state()
+
+@load_current_gameboard_state = ->
     gameboard_state = @game.gameboard_states[@current_index]
     count = @game.gameboard.tile_count_by_side
     last = @current_index + 1 == @game.gameboard_states.length
@@ -50,9 +55,8 @@
             console.log tile
 
     # end of game
-    if states_count == @current_index + 1
+    if @states_count == @current_index + 1
         display_game_outcome()
-
 
 @play = () ->
     return if @interval
@@ -83,9 +87,24 @@ in_game_setup = () ->
     document.getElementById('footer').style.display = "none"
     document.getElementById('controls').style.display = "none"
 
-add_gameboard_click_handler = ->
+add_handlers = ->
     gameboard = document.getElementById "gameboard"
-    new @ClickHandler gameboard, -> load_next_gameboard_state()
+    new @ClickHandler gameboard, () -> load_next_gameboard_state()
+
+    slider = document.getElementById "slider"
+    new @DragHandler slider, (e, start) ->
+        window.pause()
+        absolute_position = 0
+        if window.isMobile
+            absolute_position = e.touches[0].pageX
+        else
+            absolute_position = e.clientX
+
+        position = absolute_position - window.slider_margin - slider.getBoundingClientRect().left
+        index = Math.round (position / window.slider_width) * (window.states_count - 1)
+        window.current_index = Math.max(0, Math.min(window.states_count - 1, index))
+        update_slider_knob window.current_index, start
+        window.load_current_gameboard_state()
 
 add_refresh_layout_handler = ->
     if @isMobile
@@ -322,6 +341,61 @@ build_controls = () ->
 
             element.style.display = "none" if control == "pause"
 
+    build_slider()
+
+build_slider = ->
+    paper = slider_paper()
+    paper.clear()
+    knob_size = paper.height
+    @slider_margin = knob_size / 2
+    size = 1
+    @slider_width = paper.width - 2 * @slider_margin
+    l = paper.rect @slider_margin, (paper.height - size) / 2, @slider_width, size
+    l.attr "fill", text_color()
+    l.attr "stroke", "none"
+
+    ti_height = Math.round knob_size * .7
+    ii_height = Math.round knob_size * .35
+    @slider_step = @slider_width / (@states_count - 1)
+    ti_y = (paper.height - ti_height) / 2
+    ii_y = (paper.height - ii_height) / 2
+    last_player = ""
+
+    for i in [0..@states_count-1]
+        state = @game.gameboard_states[i]
+        current_player = current_player_from_state state
+
+        if i == 0 || last_player != current_player
+            indicator = paper.rect @slider_margin + i * @slider_step, ti_y, size, ti_height
+            if i == @states_count - 1
+                indicator.attr "fill", text_color()
+            else if current_player == "player1"
+                indicator.attr "fill", player_1_color()
+            else
+                indicator.attr "fill", player_2_color()
+        else
+            indicator = paper.rect @slider_margin + i * @slider_step, ii_y, size, ii_height
+            indicator.attr "fill", text_color()
+            indicator.attr "opacity", .7
+
+        indicator.attr "stroke", "none"
+
+        last_player = current_player
+
+    knob_border_width = 1
+    knob = paper.circle @slider_margin, paper.height / 2, knob_size / 2 - knob_border_width
+    knob.attr "fill", text_color()
+    knob.attr "stroke", text_color()
+    knob.attr "stroke-width", knob_border_width
+    knob.id = "slider_knob"
+
+    update_slider_knob @current_index
+
+current_player_from_state = (gameboard_state) ->
+    if gameboard_state["player1"].current_turn_count
+        return "player1"
+    return "player2"
+
 refresh_icon_color = (tile, state, color = null) ->
     unless color
         color = unfortifiable_tile_color()
@@ -419,8 +493,28 @@ get_object = (array, row, col, count) ->
 
 refresh_layout = ->
     layout_handler().reset()
+    slider = document.getElementById "slider"
+    @slider_paper.setSize slider.offsetWidth, slider.offsetHeight
+    build_slider()
 
 layout_handler = ->
     return @layout_handler if @layout_handler?
     @layout_handler = new @LayoutHandler @game.gameboard.tile_count_by_side, is_in_game()
+
+slider_paper = ->
+    return @slider_paper if @slider_paper?
+    slider = document.getElementById "slider"
+    height = slider.offsetHeight
+    width = slider.offsetWidth
+    @slider_paper = new Raphael slider, width, height
+
+update_slider_knob = (index, animated = true) ->
+    return unless index?
+    knob = slider_paper().getById "slider_knob"
+    position = @slider_margin + index * @slider_step
+    knob.stop()
+    if animated
+        knob.animate {cx: position}, 250, "ease-in-out"
+    else
+        knob.attr "cx", position
 
