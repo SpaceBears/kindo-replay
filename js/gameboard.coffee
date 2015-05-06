@@ -17,8 +17,8 @@
             refresh_theme()
             setup_game @game.gameboard, @game.player1, @game.player2, @game.max_play_count_by_turn
             add_refresh_layout_handler()
-            if param_turn_count()
-                @current_index = param_turn_count()
+            if param_play_count()
+                @current_index = param_play_count()
                 @current_index = Math.max(0, Math.min(@current_index, @states_count - 1))
                 @current_index--
             else
@@ -136,8 +136,8 @@ is_in_game = ->
 param_theme_name = ->
     @params["theme"]
 
-param_turn_count = ->
-    @params["turn"]
+param_play_count = ->
+    @params["play"]
 
 auto_play = ->
     return @auto_play if @auto_play?
@@ -534,7 +534,7 @@ update_slider_knob = (index, animated = true) ->
 
 update_url = ->
     id = game_id()
-    @params["turn"] = @current_index
+    @params["play"] = @current_index
     array = Object.keys(@params).map (key) -> "#{key}=#{@params[key]}"
     params_string = array.join '&'
     window.history.replaceState {}, "", "/?#{params_string}##{id}"
