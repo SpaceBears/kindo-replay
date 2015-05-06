@@ -13,6 +13,9 @@ $player_highlight_width: $player_image_size * 3 / 88;
 $player_image_highlight_size: $player_image_size + 4 * $player_highlight_width;
 $player_image_highlight_margin: -2 * $player_highlight_width;
 $control_size: 16px;
+$control_margin: $control_size / 4;
+$slider_margin: $control_size / 3;
+$slider_width: $gameboard_size - 2 * $control_size - 4 * $control_margin - 2 * $slider_margin;
 $micro_tile_size: 8px;
 $micro_tile_border_size: 1px;
 
@@ -202,12 +205,25 @@ a {
     text-align: center;
     @include select(none);
     height: $control_size;
+    width: $gameboard_size;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+#slider {
+    width: $slider_width;
+    margin: 0 $slider_margin;
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .control_item {
     display: inline-block;
     height: $control_size;
     width: $control_size;
-    margin: 0 $control_size / 4;
+    margin: 0 $control_margin;
+    padding: 0;
 }
 

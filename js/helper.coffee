@@ -34,12 +34,51 @@ class @ClickHandler
     onTouchMove: ->
         @moved = true
 
-    onTouchEnd: (event) ->
+    onTouchEnd: ->
         @element.removeEventListener 'touchmove', this, false
         @element.removeEventListener 'touchend', this, false
 
         unless @moved
             @callback()
+
+class @DragHandler
+    constructor: (@element, @callback) ->
+        if isMobile
+            @element.addEventListener 'touchstart', this, false
+        else
+            @element.addEventListener 'mousedown', this, false
+
+    handleEvent: (event) ->
+        event.preventDefault()
+        switch event.type
+            when 'touchstart' then @onTouchStart(event)
+            when 'mousedown'  then @onTouchStart(event)
+            when 'touchmove'  then @onTouchMove(event)
+            when 'mousemove'  then @onTouchMove(event)
+            when 'touchend'   then @onTouchEnd()
+            when 'mouseup'    then @onTouchEnd()
+
+    onTouchStart: (event) ->
+        @callback(event, true)
+
+        if isMobile
+            document.addEventListener 'touchmove', this, false
+            document.addEventListener 'touchend', this, false
+        else
+            document.addEventListener 'mousemove', this, false
+            document.addEventListener 'mouseup', this, false
+
+    onTouchMove: (event) ->
+        @callback(event, false)
+
+    onTouchEnd: ->
+        if isMobile
+            document.removeEventListener 'touchmove', this, false
+            document.removeEventListener 'touchend', this, false
+        else
+            document.removeEventListener 'mousemove', this, false
+            document.removeEventListener 'mouseup', this, false
+
 
 @Layout =
     Portrait: "portrait"
@@ -121,6 +160,12 @@ class @LayoutHandler
     controls: ->
         document.getElementById "controls"
 
+    slider: ->
+        document.getElementById "slider"
+
+    slider_knob: ->
+        document.getElementById "slider_knob"
+
     refresh_portrait_layout: ->
         @gameboard_size = @measure_gameboard_size(window.innerWidth)
         @gameboard_h_margin = (window.innerWidth - @gameboard_size) / 2
@@ -133,7 +178,7 @@ class @LayoutHandler
             height = page_height
         else
             controls_height = @controls_height @gameboard_size
-            @refresh_controls_height controls_height
+            @refresh_controls controls_height
             height = page_height - 2 * controls_height
 
         margin = Math.min @min_margin(window.innerWidth), @gameboard_h_margin
@@ -187,10 +232,8 @@ class @LayoutHandler
             @gameboard_container().style.height = "100%"
         else
             page_height = @page().offsetHeight
-
             @gameboard_size = @measure_gameboard_size(page_height)
             controls_height = @controls_height @gameboard_size
-            @refresh_controls_height controls_height
 
             @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
@@ -200,6 +243,7 @@ class @LayoutHandler
         container_width = @gameboard_container().offsetWidth
         @gameboard_size = @measure_gameboard_size(container_height)
         @gameboard_v_margin = Math.round((container_height - @gameboard_size) / 2)
+        @refresh_controls controls_height
 
         # Player cards
         card_width = container_width - @gameboard_size - @gameboard_v_margin
@@ -232,7 +276,6 @@ class @LayoutHandler
 
             @gameboard_size = @measure_gameboard_size(page_height)
             controls_height = @controls_height @gameboard_size
-            @refresh_controls_height controls_height
 
             @gameboard_container().style.height = "#{page_height - 2 * controls_height}px"
 
@@ -241,6 +284,7 @@ class @LayoutHandler
         container_height = @gameboard_container().offsetHeight
         container_width = @gameboard_container().offsetWidth
         @gameboard_size = @measure_gameboard_size(container_height)
+        @refresh_controls controls_height
 
         # Player cards
         card_width = "#{Math.floor((container_width - @gameboard_size) / 2)}px"
@@ -342,14 +386,22 @@ class @LayoutHandler
             tile.style.height = "#{size}px"
             tile.style.borderWidth = "#{border}px"
 
-    refresh_controls_height: (height) ->
+    refresh_controls: (height) ->
+        @controls().style.width = "#{@gameboard_size}px"
         @controls().style.height = "#{height}px"
         @controls().style.lineHeight = "#{height}px"
         @controls().style.marginBottom = "#{height}px"
-        for control in @controls().children
+        margin = height / 4
+        for control in @controls().rows[0].cells
             control.style.height = "#{height}px"
-            control.style.width = "#{height}px"
-            control.style.margin = "0 #{height / 4}px"
+            unless control.id == "slider"
+                control.style.margin = "0 #{margin}px"
+                control.style.width = "#{height}px"
+
+        slider_margin = height / 3
+        slider_border_width = height / 8
+        @slider().style.margin = "0 #{slider_margin}px"
+        @slider().style.width = "#{@gameboard_size - 2 * height - 4 * margin - 2 * slider_margin}px"
 
     controls_height: (gameboard_size) ->
         Math.round gameboard_size / 14
