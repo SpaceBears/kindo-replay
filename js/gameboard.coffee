@@ -160,7 +160,13 @@ refresh_theme = ->
     document.body.style.color = text_color()
     styleSheet = document.styleSheets[0]
     style = "background: #{player_1_color()}; color: #{light_text_color()};"
-    styleSheet.addRule  "body ::selection", style, 1
+    styleSheet.addRule "body ::selection", style, 1
+
+    app_store = "background-color: #{player_1_color()};"
+    styleSheet.addRule "#app_store_link", app_store, 1
+
+    app_store_hover = "background-color: #{player_2_color()};"
+    styleSheet.addRule "#app_store_link:hover", app_store_hover, 1
 
 display_game_outcome = ->
     return unless @game.game_outcome?
