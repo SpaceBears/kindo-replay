@@ -239,7 +239,7 @@ build_players = (players, max_play_count) ->
 
         # Title
         title = document.getElementById "player#{i+1}_title"
-        title.innerHTML = player.username
+        title.innerHTML = username player, i
         title.style.color = color_from_state(i+1)
 
         # Title
@@ -252,6 +252,11 @@ build_players = (players, max_play_count) ->
             micro_tile = document.createElement "div"
             micro_tile.className = "micro_tile"
             plays_count.appendChild micro_tile
+
+username = (player, index) ->
+    if player.type == "local"
+        return "player #{index + 1}"
+    return player.username
 
 build_gameboard = (gameboard) ->
     count = gameboard.tile_count_by_side
