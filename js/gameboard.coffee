@@ -221,6 +221,7 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
     build_gameboard gameboard
     fill_game_outcome()
     build_controls()
+    build_graph()
 
 build_players = (players, max_play_count) ->
     for player, i in players
@@ -416,6 +417,41 @@ build_slider = ->
 
     update_slider_knob @current_index
 
+build_graph = ->
+    paper = graph_paper()
+    margin = 0
+    width = paper.width - 2 * margin
+    height = paper.height
+
+    paper.clear()
+    axe = paper.rect margin, 0, 1, height
+    axe.attr "fill", text_color()
+    axe.attr "stroke", "none"
+
+    [dominations1, dominations2] = dominations @game.gameboard_states
+    top_value = Math.max dominations1.concat(dominations2)
+    y_ratio = height / top_value
+
+    x_values = (i for i in [0..@states_count-1])
+
+    for d, i in [dominations2, dominations1]
+        if i == 1
+            color = player_1_color()
+        else
+            color = player_2_color()
+        opts = {smooth: true, nostroke: true, shade: true, colors: [color]}
+        c = paper.linechart margin, 0, width, height, x_values, d, opts
+        c.attr "opacity", .12
+
+    for d, i in [dominations2, dominations1]
+        if i == 1
+            color = player_1_color()
+        else
+            color = player_2_color()
+        opts = {smooth: true, colors: [color]}
+        paper.linechart margin, 0, width, height, x_values, d, opts
+
+
 current_player_from_state = (gameboard_state) ->
     if gameboard_state["player1"].current_turn_count
         return "player1"
@@ -533,6 +569,13 @@ slider_paper = ->
     width = slider.offsetWidth
     @slider_paper = new Raphael slider, width, height
 
+graph_paper = ->
+    return @graph_paper if @graph_paper?
+    graph = document.getElementById "graph"
+    height = graph.offsetHeight
+    width = graph.offsetWidth
+    @graph_paper = new Raphael graph, width, height
+
 update_slider_knob = (index, animated = true) ->
     return unless index?
     knob = slider_paper().getById "slider_knob"
@@ -550,3 +593,23 @@ update_url = ->
     params_string = array.join '&'
     window.history.replaceState {}, "", "/?#{params_string}##{id}"
 
+dominations = (gameboard_states) ->
+    p1 = []
+    p2 = []
+    for gameboard_state in gameboard_states
+        [player1, player2] = domination gameboard_state
+        p1.push player1
+        p2.push player2
+
+    [p1, p2]
+
+domination = (gameboard_state) ->
+    p1 = 0
+    p2 = 0
+    for state in gameboard_state.states
+        if state == 1 || state == 3
+            p1++
+        if state == 2 || state == 4
+            p2++
+
+    [p1, p2]
