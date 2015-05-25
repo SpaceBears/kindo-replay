@@ -93,6 +93,8 @@ pause_control = () ->
 in_game_setup = () ->
     document.getElementById('footer').style.display = "none"
     document.getElementById('controls').style.display = "none"
+    document.getElementById('graph').style.display = "none"
+    document.getElementById('mobile_graph').style.display = "none"
 
 add_handlers = ->
     gameboard = document.getElementById "gameboard"
@@ -221,6 +223,7 @@ setup_game = (gameboard, player1, player2, max_play_count) ->
     build_gameboard gameboard
     fill_game_outcome()
     build_controls()
+    build_graph()
 
 build_players = (players, max_play_count) ->
     for player, i in players
@@ -416,6 +419,44 @@ build_slider = ->
 
     update_slider_knob @current_index
 
+reset_graph = ->
+    graph_element().innerHTML = ""
+    @graph_paper = null
+
+build_graph = ->
+    paper = graph_paper()
+    margin = -10 + @slider_margin
+    width = paper.width - 2 * margin
+    height = paper.height
+
+    paper.clear()
+
+    [dominations1, dominations2] = dominations @game.gameboard_states
+    top_value = Math.max dominations1.concat(dominations2)
+    y_ratio = height / top_value
+
+    x_values = (i for i in [0..@states_count-1])
+
+    for d, i in [dominations2, dominations1]
+        if i == 1
+            color = player_1_color()
+        else
+            color = player_2_color()
+        opts = {smooth: true, nostroke: true, shade: true, colors: [color]}
+        c = paper.linechart margin, 0, width, height, x_values, d, opts
+        c.attr "opacity", .12
+
+    for d, i in [dominations2, dominations1]
+        if i == 1
+            color = player_1_color()
+        else
+            color = player_2_color()
+        opts = {smooth: true, colors: [color]}
+        chart = paper.linechart margin, 0, width, height, x_values, d, opts
+        chart.labels = ["test"]
+        console.log chart
+
+
 current_player_from_state = (gameboard_state) ->
     if gameboard_state["player1"].current_turn_count
         return "player1"
@@ -521,6 +562,8 @@ refresh_layout = ->
     slider = document.getElementById "slider"
     @slider_paper.setSize slider.offsetWidth, slider.offsetHeight
     build_slider()
+    reset_graph()
+    build_graph()
 
 layout_handler = ->
     return @layout_handler if @layout_handler?
@@ -532,6 +575,19 @@ slider_paper = ->
     height = slider.offsetHeight
     width = slider.offsetWidth
     @slider_paper = new Raphael slider, width, height
+
+graph_paper = ->
+    return @graph_paper if @graph_paper?
+    slider = document.getElementById "slider"
+    graph = graph_element()
+    graph.style.width = "#{slider.offsetWidth}px"
+    graph.style.height = "#{Math.round slider.offsetWidth / 2}px"
+    height = graph.offsetHeight
+    width = graph.offsetWidth
+    @graph_paper = new Raphael graph, width, height
+
+graph_element = ->
+    document.getElementById if @isMobile then "mobile_graph" else "graph"
 
 update_slider_knob = (index, animated = true) ->
     return unless index?
@@ -550,3 +606,23 @@ update_url = ->
     params_string = array.join '&'
     window.history.replaceState {}, "", "/?#{params_string}##{id}"
 
+dominations = (gameboard_states) ->
+    p1 = []
+    p2 = []
+    for gameboard_state in gameboard_states
+        [player1, player2] = domination gameboard_state
+        p1.push player1
+        p2.push player2
+
+    [p1, p2]
+
+domination = (gameboard_state) ->
+    p1 = 0
+    p2 = 0
+    for state in gameboard_state.states
+        if state == 1 || state == 3
+            p1++
+        if state == 2 || state == 4
+            p2++
+
+    [p1, p2]

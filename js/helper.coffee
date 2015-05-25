@@ -401,8 +401,8 @@ class @LayoutHandler
 
         slider_margin = height / 3
         slider_border_width = height / 8
-        @slider().style.margin = "0 #{slider_margin}px"
-        @slider().style.width = "#{@gameboard_size - 2 * height - 4 * margin - 2 * slider_margin}px"
+        @slider().style.margin = "0 #{Math.floor slider_margin}px"
+        @slider().style.width = "#{Math.floor(@gameboard_size - 2 * height - 4 * margin - 2 * slider_margin)}px"
 
     controls_height: (gameboard_size) ->
         Math.round gameboard_size / 14
