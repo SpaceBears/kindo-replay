@@ -218,10 +218,9 @@ table, th, tr, td {
     margin: 0 auto;
 }
 
-#graph {
-    height: round($slider_width / 2);
+#graph, #mobile_graph {
     width: $slider_width;
-    margin: 0 auto (-$control_size / 2) auto;
+    margin: 0 auto -10px auto;
 }
 
 #slider {

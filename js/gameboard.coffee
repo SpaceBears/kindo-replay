@@ -93,6 +93,8 @@ pause_control = () ->
 in_game_setup = () ->
     document.getElementById('footer').style.display = "none"
     document.getElementById('controls').style.display = "none"
+    document.getElementById('graph').style.display = "none"
+    document.getElementById('mobile_graph').style.display = "none"
 
 add_handlers = ->
     gameboard = document.getElementById "gameboard"
@@ -417,16 +419,17 @@ build_slider = ->
 
     update_slider_knob @current_index
 
+reset_graph = ->
+    graph_element().innerHTML = ""
+    @graph_paper = null
+
 build_graph = ->
     paper = graph_paper()
-    margin = 0
+    margin = -10 + @slider_margin
     width = paper.width - 2 * margin
     height = paper.height
 
     paper.clear()
-    axe = paper.rect margin, 0, 1, height
-    axe.attr "fill", text_color()
-    axe.attr "stroke", "none"
 
     [dominations1, dominations2] = dominations @game.gameboard_states
     top_value = Math.max dominations1.concat(dominations2)
@@ -449,7 +452,9 @@ build_graph = ->
         else
             color = player_2_color()
         opts = {smooth: true, colors: [color]}
-        paper.linechart margin, 0, width, height, x_values, d, opts
+        chart = paper.linechart margin, 0, width, height, x_values, d, opts
+        chart.labels = ["test"]
+        console.log chart
 
 
 current_player_from_state = (gameboard_state) ->
@@ -557,6 +562,8 @@ refresh_layout = ->
     slider = document.getElementById "slider"
     @slider_paper.setSize slider.offsetWidth, slider.offsetHeight
     build_slider()
+    reset_graph()
+    build_graph()
 
 layout_handler = ->
     return @layout_handler if @layout_handler?
@@ -571,10 +578,16 @@ slider_paper = ->
 
 graph_paper = ->
     return @graph_paper if @graph_paper?
-    graph = document.getElementById "graph"
+    slider = document.getElementById "slider"
+    graph = graph_element()
+    graph.style.width = "#{slider.offsetWidth}px"
+    graph.style.height = "#{Math.round slider.offsetWidth / 2}px"
     height = graph.offsetHeight
     width = graph.offsetWidth
     @graph_paper = new Raphael graph, width, height
+
+graph_element = ->
+    document.getElementById if @isMobile then "mobile_graph" else "graph"
 
 update_slider_knob = (index, animated = true) ->
     return unless index?
