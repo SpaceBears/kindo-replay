@@ -243,12 +243,14 @@ class @LayoutHandler
         container_height = @gameboard_container().offsetHeight
         container_width = @gameboard_container().offsetWidth
         @gameboard_size = @measure_gameboard_size(container_height)
-        @gameboard_v_margin = Math.round((container_height - @gameboard_size) / 2)
+
+        # Sizes
+        card_height = Math.floor @gameboard_size / 2
+        [@gameboard_size, card_width, card_height] = @measure_landscape_components_size(@gameboard_size, card_height, container_width, container_height)
+
         @refresh_controls controls_height
 
         # Player cards
-        card_width = container_width - @gameboard_size - @gameboard_v_margin
-        card_height = Math.floor @gameboard_size / 2
         for i in [1, 2]
             @player_card_container(i).style.width = "#{card_width}px"
             @player_card_container(i).style.height = "#{card_height}px"
@@ -265,6 +267,23 @@ class @LayoutHandler
         @gameboard_wrapper().style.paddingLeft = "#{card_width}px"
         @gameboard_wrapper().style.width = "#{@gameboard_size}px"
         @gameboard_wrapper().style.margin = 0
+
+    measure_landscape_components_size: (gameboard_size, card_height, container_width, container_height) ->
+        image_size = @measure_image_size gameboard_size
+        min_margin = @min_margin(container_width)
+        base_width = gameboard_size + image_size
+        if base_width + 3 * min_margin > container_width
+            ratio = (container_width - 3 * min_margin) / base_width
+            gameboard_size = Math.round gameboard_size * ratio
+            card_height = Math.round card_height * ratio
+
+        @gameboard_v_margin = Math.round((container_height - gameboard_size) / 2)
+        if ratio?
+            card_width = container_width - gameboard_size - min_margin
+        else
+            card_width = container_width - gameboard_size - @gameboard_v_margin
+
+        [gameboard_size, card_width, card_height]
 
     refresh_flat_landscape_layout: ->
         @page().style.width = "100%"
@@ -368,7 +387,7 @@ class @LayoutHandler
         el.style.WebkitBorderRadius = border_radius
 
     min_margin: (in_size) ->
-        in_size / @tile_count_by_side / 3.5
+        Math.floor in_size / @tile_count_by_side / 3.5
 
     measure_gameboard_size: (in_size) ->
         tile_size = Math.floor((in_size - 2 * @min_margin(in_size)) / @tile_count_by_side)
