@@ -454,8 +454,6 @@ build_graph = ->
         opts = {smooth: true, colors: [color]}
         chart = paper.linechart margin, 0, width, height, x_values, d, opts
         chart.labels = ["test"]
-        console.log chart
-
 
 current_player_from_state = (gameboard_state) ->
     if gameboard_state["player1"].current_turn_count
