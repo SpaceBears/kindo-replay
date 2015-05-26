@@ -23,7 +23,7 @@
                 @current_index--
             else
                 @current_index = null
-            load_next_gameboard_state()
+            load_next_gameboard_state(false)
             @play() if auto_play()
         else if error
             document.getElementById("error_container").style.display = "block"
@@ -31,7 +31,7 @@
         else
             window.location = "http://kindogame.fr"
 
-@load_next_gameboard_state = () ->
+@load_next_gameboard_state = (animated = true) ->
     if @current_index == null
         @current_index = 0
     else
@@ -46,7 +46,7 @@
             @auto_play = true
         return
     else
-        update_slider_knob @current_index
+        update_slider_knob @current_index, animated
         update_url()
 
     @load_current_gameboard_state()
@@ -417,7 +417,7 @@ build_slider = ->
     knob.attr "stroke-width", knob_border_width
     knob.id = "slider_knob"
 
-    update_slider_knob @current_index
+    update_slider_knob @current_index, false
 
 reset_graph = ->
     graph_element().innerHTML = ""
